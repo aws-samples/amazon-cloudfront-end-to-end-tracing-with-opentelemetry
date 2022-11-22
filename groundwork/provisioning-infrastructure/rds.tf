@@ -1,10 +1,4 @@
 # ---------------------------------------------------------------------------------------------------------------------
-# Random Password for RDS
-# ---------------------------------------------------------------------------------------------------------------------
-resource "random_password" "master" {
-  length = 10
-}
-# ---------------------------------------------------------------------------------------------------------------------
 # RDS Aurora PostgreSQL
 # ---------------------------------------------------------------------------------------------------------------------
 module "rds" {
@@ -32,10 +26,6 @@ module "rds" {
   create_random_password = false
   master_username        = "postgres"
   master_password        = "postgres1234"
-  #  master_password        = random_password.master.result
-
-  # db_parameter_group_name         = "default"
-  # db_cluster_parameter_group_name = "default"
 
   performance_insights_enabled    = true
   enabled_cloudwatch_logs_exports = ["postgresql"]
