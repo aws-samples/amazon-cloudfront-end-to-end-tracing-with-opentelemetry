@@ -25,7 +25,7 @@ variable "on_demand_node_group_name" {
 
 variable "kubernetes_version" {
   type        = string
-  default     = "1.21"
+  default     = "1.23"
   description = "Desired Kubernetes master version. If you do not specify a value, the latest available version is used"
 }
 

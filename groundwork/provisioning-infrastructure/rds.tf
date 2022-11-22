@@ -9,7 +9,7 @@ resource "random_password" "master" {
 # ---------------------------------------------------------------------------------------------------------------------
 module "rds" {
   source  = "terraform-aws-modules/rds-aurora/aws"
-  version = "7.1.0"
+  version = "7.6.0"
 
   database_name  = "postgres"
   name           = "aurora-db-postgres"

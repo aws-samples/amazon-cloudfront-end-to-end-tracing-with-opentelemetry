@@ -7,7 +7,7 @@ resource "aws_kms_key" "eks" {
 
 module "eks" {
   source          = "terraform-aws-modules/eks/aws"
-  version         = "18.26.6"
+  version         = "18.31.0"
   cluster_name    = var.eks_cluster_name
   cluster_version = var.kubernetes_version
   subnet_ids      = aws_subnet.eks-private.*.id
