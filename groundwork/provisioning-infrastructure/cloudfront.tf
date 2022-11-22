@@ -183,4 +183,6 @@ resource "aws_lambda_permission" "allow_cloudwatch" {
   function_name = aws_lambda_function.cf_tracing_processor.function_name
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_log_group.cf_tracing_response.arn
+
+  provider = aws.us
 }
