@@ -176,3 +176,11 @@ resource "aws_cloudwatch_log_subscription_filter" "cf_tracing_response_filter" {
 
   provider = aws.us
 }
+
+resource "aws_lambda_permission" "allow_cloudwatch" {
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.cf_tracing_processor.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_log_group.cf_tracing_response.arn
+}
