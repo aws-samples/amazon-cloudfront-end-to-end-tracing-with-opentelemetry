@@ -150,8 +150,6 @@ resource "aws_lambda_function" "cf_tracing_processor" {
   handler  = "cf-tracing-processor.handler"
   filename = "${path.module}/cf_tracing_processor.zip"
 
-  source_code_hash = filebase64sha256("cf_tracing_processor.zip")
-
   provider = aws.us
 
   environment {
