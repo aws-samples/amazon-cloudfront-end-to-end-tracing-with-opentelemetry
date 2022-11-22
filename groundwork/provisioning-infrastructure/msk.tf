@@ -76,8 +76,13 @@ resource "aws_msk_cluster" "msk-cluster" {
   number_of_broker_nodes = 2
 
   broker_node_group_info {
-    instance_type   = "kafka.m5.large"
-    ebs_volume_size = 1000
+    instance_type = "kafka.m5.large"
+    storage_info {
+      ebs_storage_info {
+        volume_size = 1000
+      }
+    }
+
     client_subnets  = aws_subnet.backing-private.*.id
     security_groups = [aws_security_group.allow_msk.id]
   }
