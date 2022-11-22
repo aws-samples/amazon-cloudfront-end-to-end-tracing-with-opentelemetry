@@ -86,8 +86,8 @@ resource "aws_cloudfront_function" "cf_tracing_response" {
 }
 
 resource "aws_cloudwatch_log_group" "cf_tracing_response" {
-  name     = "/aws/cloudfront/function/cf-tracing-response"
-  provider = aws.us
+  name              = "/aws/cloudfront/function/cf-tracing-response"
+  provider          = aws.us
   retention_in_days = 7
 }
 
@@ -116,19 +116,19 @@ EOF
       Version = "2012-10-17"
       Statement = [
         {
-            "Effect": "Allow",
-            "Action": "logs:CreateLogGroup",
-            "Resource": "arn:aws:logs:us-east-1:${data.aws_caller_identity.current.account_id}:*"
+          "Effect" : "Allow",
+          "Action" : "logs:CreateLogGroup",
+          "Resource" : "arn:aws:logs:us-east-1:${data.aws_caller_identity.current.account_id}:*"
         },
         {
-            "Effect": "Allow",
-            "Action": [
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-            ],
-            "Resource": [
-                "arn:aws:logs:us-east-1:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/cf_tracing_processor:*"
-            ]
+          "Effect" : "Allow",
+          "Action" : [
+            "logs:CreateLogStream",
+            "logs:PutLogEvents"
+          ],
+          "Resource" : [
+            "arn:aws:logs:us-east-1:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/cf_tracing_processor:*"
+          ]
         }
       ]
     })
@@ -146,8 +146,8 @@ resource "aws_lambda_function" "cf_tracing_processor" {
   function_name = "cf_tracing_processor"
   role          = aws_iam_role.iam_for_lambda.arn
 
-  runtime = "nodejs14.x"
-  handler = "cf-tracing-processor.handler"
+  runtime  = "nodejs14.x"
+  handler  = "cf-tracing-processor.handler"
   filename = "${path.module}/cf_tracing_processor.zip"
 
   source_code_hash = filebase64sha256("cf_tracing_processor.zip")
@@ -156,17 +156,17 @@ resource "aws_lambda_function" "cf_tracing_processor" {
 
   environment {
     variables = {
-      OPENTELEMETRY_COLLECTOR_HOSTNAME = data.aws_lb.k8s_ingress_lb.dns_name
+      OPENTELEMETRY_COLLECTOR_HOSTNAME       = data.aws_lb.k8s_ingress_lb.dns_name
       OPENTELEMETRY_COLLECTOR_OTLP_HTTP_PORT = local.otel_collector_otlp_http_port
-      TRACE_SAMPLING_RATE = var.trace_sampling_rate
-      CLOUDFRONT_DOMAIN_NAME = aws_cloudfront_distribution.e2e_tracing.domain_name
+      TRACE_SAMPLING_RATE                    = var.trace_sampling_rate
+      CLOUDFRONT_DOMAIN_NAME                 = aws_cloudfront_distribution.e2e_tracing.domain_name
     }
   }
 }
 
 resource "aws_cloudwatch_log_group" "cf_tracing_processor" {
-  name     = "/aws/lambda/cf_tracing_processor"
-  provider = aws.us
+  name              = "/aws/lambda/cf_tracing_processor"
+  provider          = aws.us
   retention_in_days = 7
 }
 
