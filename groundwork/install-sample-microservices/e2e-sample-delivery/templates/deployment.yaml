@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "e2e-sample-delivery.fullname" . }}
+  labels:
+    {{- include "e2e-sample-delivery.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "e2e-sample-delivery.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "e2e-sample-delivery.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "e2e-sample-delivery.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.healthCheck.path }}
+              port: http
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.healthCheck.path }}
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            - name: KAFKA_CONNECTION_STRING
+              value: {{ .Values.application.kafkaConnectionString }}
+            - name: KAFKA_CONSUMER_GROUP_ID
+              value: {{ .Values.application.kafkaConsumerGroupId }}
+            - name: KAFKA_CONSUMER_AUTO_OFFSET_RESET
+              value: {{ .Values.application.kafkaAutoOffsetReset }}
+            - name: KAFKA_TOPIC_DELIVERY_CHANGE
+              value: {{ .Values.application.kafkaTopicNameDeliveryChange }}
+            - name: DB_HOST
+              value: {{ .Values.application.dbHost }}
+            - name: DB_PORT
+              value: "{{ .Values.application.dbPort }}"
+            - name: DB_NAME
+              value: {{ .Values.application.dbName }}
+            - name: DB_USERNAME
+              value: {{ .Values.application.dbUsername }}
+            - name: DB_PASSWORD
+              value: {{ .Values.application.dbPassword }}
+            - name: DB_MAX_POOL_SIZE
+              value: "{{ .Values.application.dbMaxPoolSize }}"
+            - name: DB_SCHEMA
+              value: {{ .Values.application.dbSchema }}
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: {{ .Values.telemetry.traces.endpoint }}
+            - name: OTEL_TRACES_EXPORTER
+              value: {{ .Values.telemetry.traces.exporter }}
+            - name: OTEL_PROPAGATORS
+              value: {{ join "," .Values.telemetry.traces.propagators }}
+            - name: OTEL_TRACES_SAMPLER
+              value: {{ .Values.telemetry.traces.sampler }}
+            - name: OTEL_METRICS_EXPORTER
+              value: {{ .Values.telemetry.metrics.exporter }}
+            - name: OTEL_INSTRUMENTATION_JDBC-DATASOURCE_ENABLED
+              value: "{{ .Values.telemetry.instrument.jdbcDatasourceEnabled }}"
+            - name: OTEL_INSTRUMENTATION_COMMON_EXPERIMENTAL_SUPPRESS_MESSAGING_RECEIVE_SPANS
+              value: "{{ .Values.telemetry.instrument.commonExperimentalSuppressMessagingReceiveSpans }}"
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: {{ join "," .Values.telemetry.resourceAttributes }}
+            - name: LOGGING_PATTERN_CONSOLE
+              value: "{{ .Values.telemetry.logs.loggingPatternConsole }}"
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,96 @@
+plugins {
+    id 'org.springframework.boot' version '2.6.7' apply false
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE' apply false
+    id 'java'
+}
+
+group = 'com.aws.peach'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'java'
+    apply plugin: 'groovy'
+
+    configurations {
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
+    }
+
+    bootJar.enabled = false
+    jar.enabled = true
+
+    group = 'com.aws.peach'
+    version = '0.0.1-SNAPSHOT'
+    sourceCompatibility = '11'
+
+    dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter'
+        implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+        implementation 'redis.clients:jedis:3.8.0'
+        compileOnly 'org.projectlombok:lombok'
+        annotationProcessor 'org.projectlombok:lombok'
+        implementation group: 'com.google.guava', name: 'guava', version: '30.1.1-jre'
+        testImplementation('org.springframework.boot:spring-boot-starter-test')
+        testImplementation group: 'org.spockframework', name: 'spock-core', version: '2.0-groovy-3.0'
+        testImplementation group: 'org.spockframework', name: 'spock-spring', version: '2.0-groovy-3.0'
+        implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.3'
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+}
+
+project(':interface') {
+    bootJar.enabled = true
+    bootJar.archiveFileName = "app.jar"
+    jar.enabled = false
+    dependencies {
+        implementation project(':application')
+        implementation project(':domain')
+        implementation project(':infrastructure')
+        implementation 'org.springframework.boot:spring-boot-starter-web'
+        implementation 'org.springframework.kafka:spring-kafka'
+        implementation 'org.springframework.boot:spring-boot-starter-validation'
+        implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    }
+}
+
+project(':application') {
+    dependencies {
+        implementation project(':domain')
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    }
+}
+
+project(':domain') {
+    dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    }
+}
+
+project(':infrastructure') {
+    dependencies {
+        implementation project(':application')
+        implementation project(':domain')
+        implementation 'org.springframework.kafka:spring-kafka'
+        runtimeOnly 'org.postgresql:postgresql'
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+        implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.3'
+
+        implementation group: 'com.squareup.retrofit2', name: 'retrofit', version: '2.9.0'
+        implementation group: 'com.squareup.retrofit2', name: 'converter-jackson', version: '2.9.0'
+        implementation group: 'com.squareup.okhttp3', name: 'logging-interceptor', version: '3.9.0'
+    }
+}

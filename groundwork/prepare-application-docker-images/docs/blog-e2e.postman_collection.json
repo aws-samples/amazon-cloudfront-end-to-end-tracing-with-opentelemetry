@@ -1,0 +1,688 @@
+{
+	"info": {
+		"_postman_id": "bd0b7847-09bb-4af1-b96b-52014baa015e",
+		"name": "blog-e2e",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "#1 /orders",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"orderNo\", pm.response.text());"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"orderer\": \"member123\",\n    \"orderLines\": [\n        {\n            \"productId\": \"2021-PRODUCT-PEACH-01\",\n            \"quantity\": 1\n        },\n        {\n            \"productId\": \"2021-PRODUCT-PEACH-02\",\n            \"quantity\": 2\n        },\n        {\n            \"productId\": \"2021-PRODUCT-PEACH-03\",\n            \"quantity\": 3\n        }\n    ],\n    \"shippingRequest\": {\n        \"city\": \"Seoul\",\n        \"telephoneNumber\": \"01012341234\",\n        \"receiver\": \"Bob\",\n        \"address1\": \"231 Teheran-ro, Gangnam-gu, Seoul\",\n        \"address2\": \".\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{domain_name}}/orders",
+					"protocol": "https",
+					"host": [
+						"{{domain_name}}"
+					],
+					"path": [
+						"orders"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "example",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"orderer\": \"member123\",\n    \"orderLines\": [\n        {\n            \"productId\": \"2021-PRODUCT-PEACH-01\",\n            \"quantity\": 1\n        },\n        {\n            \"productId\": \"2021-PRODUCT-PEACH-02\",\n            \"quantity\": 2\n        },\n        {\n            \"productId\": \"2021-PRODUCT-PEACH-03\",\n            \"quantity\": 3\n        }\n    ],\n    \"shippingRequest\": {\n        \"city\": \"Seoul\",\n        \"telephoneNumber\": \"01012341234\",\n        \"receiver\": \"Bob\",\n        \"address1\": \"231 Teheran-ro, Gangnam-gu, Seoul\",\n        \"address2\": \".\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://{{domain_name}}/orders",
+							"protocol": "https",
+							"host": [
+								"{{domain_name}}"
+							],
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "plain",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "text/plain;charset=UTF-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "21"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Server",
+							"value": "CloudFront"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 21 Aug 2022 13:44:18 GMT"
+						},
+						{
+							"key": "Cfn-Trace-Id",
+							"value": "4559beb89d50c69795e85d408326509f"
+						},
+						{
+							"key": "X-Cache",
+							"value": "Miss from cloudfront"
+						},
+						{
+							"key": "Via",
+							"value": "1.1 485f314a42a9f55627218967d20fdc00.cloudfront.net (CloudFront)"
+						},
+						{
+							"key": "X-Amz-Cf-Pop",
+							"value": "HIO50-C2"
+						},
+						{
+							"key": "X-Amz-Cf-Id",
+							"value": "OVXWWbJxwJ0xK_ei14eJ85EiILg-97kOnve85cGjinDdfxsTGN_FJg=="
+						}
+					],
+					"cookie": [],
+					"body": "20220821224418-650690"
+				}
+			]
+		},
+		{
+			"name": "#2 /orders/{id}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"pm.collectionVariables.set(\"deliveryId\", jsonData.deliveryId);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://{{domain_name}}/orders/:id",
+					"protocol": "https",
+					"host": [
+						"{{domain_name}}"
+					],
+					"path": [
+						"orders",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{orderNo}}"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "example",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{domain_name}}/orders/:id",
+							"protocol": "https",
+							"host": [
+								"{{domain_name}}"
+							],
+							"path": [
+								"orders",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{orderNo}}"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Server",
+							"value": "CloudFront"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 21 Aug 2022 13:44:24 GMT"
+						},
+						{
+							"key": "Cfn-Trace-Id",
+							"value": "63976a80a6cb283bfd08123637f77720"
+						},
+						{
+							"key": "X-Cache",
+							"value": "Miss from cloudfront"
+						},
+						{
+							"key": "Via",
+							"value": "1.1 485f314a42a9f55627218967d20fdc00.cloudfront.net (CloudFront)"
+						},
+						{
+							"key": "X-Amz-Cf-Pop",
+							"value": "HIO50-C2"
+						},
+						{
+							"key": "X-Amz-Cf-Id",
+							"value": "pcWEOJgQQaVA9YnYBgAgY4n_b6dPIl1p8kQPfKz6QbiyWY3KM8F1jg=="
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"orderNumber\": \"20220821224418-650690\",\n    \"deliveryId\": \"117\",\n    \"orderLines\": [\n        {\n            \"id\": 298,\n            \"productId\": \"2021-PRODUCT-PEACH-01\",\n            \"productName\": \"Awesome Peach\",\n            \"productPrice\": 20000,\n            \"quantity\": 1,\n            \"productNameAndQuantity\": \" Awesome Peach(1)\"\n        },\n        {\n            \"id\": 299,\n            \"productId\": \"2021-PRODUCT-PEACH-02\",\n            \"productName\": \"Gold Peach\",\n            \"productPrice\": 20000,\n            \"quantity\": 2,\n            \"productNameAndQuantity\": \" Gold Peach(2)\"\n        },\n        {\n            \"id\": 300,\n            \"productId\": \"2021-PRODUCT-PEACH-03\",\n            \"productName\": \"Sweet Peach\",\n            \"productPrice\": 20000,\n            \"quantity\": 3,\n            \"productNameAndQuantity\": \" Sweet Peach(3)\"\n        }\n    ],\n    \"ordererId\": \"member123\",\n    \"ordererName\": null,\n    \"orderState\": \"PLACED\",\n    \"createdDateTime\": 1661089458.641272,\n    \"shippingInfo\": {\n        \"city\": \"Seoul\",\n        \"telephone\": \"01012341234\",\n        \"receiver\": \"Bob\",\n        \"address1\": \"231 Teheran-ro, Gangnam-gu, Seoul\",\n        \"address2\": \".\"\n    },\n    \"orderLinesSummary\": {\n        \"orderedProductNameAndQuantities\": \" Awesome Peach(1) Gold Peach(2) Sweet Peach(3)\",\n        \"totalPrice\": 120000\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "#3 /delivery/{id}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://{{domain_name}}/delivery/:id",
+					"protocol": "https",
+					"host": [
+						"{{domain_name}}"
+					],
+					"path": [
+						"delivery",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{deliveryId}}"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "example",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{domain_name}}/delivery/:id",
+							"protocol": "https",
+							"host": [
+								"{{domain_name}}"
+							],
+							"path": [
+								"delivery",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{deliveryId}}"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Server",
+							"value": "CloudFront"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 21 Aug 2022 13:44:28 GMT"
+						},
+						{
+							"key": "Cfn-Trace-Id",
+							"value": "3eb0d8714a481d7e8d44c03fe2641617"
+						},
+						{
+							"key": "X-Cache",
+							"value": "Miss from cloudfront"
+						},
+						{
+							"key": "Via",
+							"value": "1.1 485f314a42a9f55627218967d20fdc00.cloudfront.net (CloudFront)"
+						},
+						{
+							"key": "X-Amz-Cf-Pop",
+							"value": "HIO50-C2"
+						},
+						{
+							"key": "X-Amz-Cf-Id",
+							"value": "nwbOIaVwbxTkQQceQjXI4AP6YYyLQK1wWGaPKRVI2dzGYB1Tfe2WVg=="
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"deliveryId\": \"117\",\n    \"order\": {\n        \"orderNo\": \"20220821224418-650690\",\n        \"openedAt\": \"2022-08-21T13:44:18.641272Z\",\n        \"ordererId\": \"member123\",\n        \"ordererName\": null\n    },\n    \"items\": [\n        {\n            \"name\": \"Awesome Peach\",\n            \"quantity\": 1\n        },\n        {\n            \"name\": \"Gold Peach\",\n            \"quantity\": 2\n        },\n        {\n            \"name\": \"Sweet Peach\",\n            \"quantity\": 3\n        }\n    ],\n    \"sendingAddress\": {\n        \"name\": null,\n        \"city\": \"Blue Mountain\",\n        \"telephone\": \"010-1111-2222\",\n        \"address1\": \"Pine Valley 123\",\n        \"address2\": null\n    },\n    \"shippingAddress\": {\n        \"name\": \"Bob\",\n        \"city\": \"Seoul\",\n        \"telephone\": \"01012341234\",\n        \"address1\": \"231 Teheran-ro, Gangnam-gu, Seoul\",\n        \"address2\": \".\"\n    },\n    \"status\": \"PREPARING\",\n    \"updatedAt\": \"2022-08-21T13:44:18.647406Z\"\n}"
+				}
+			]
+		},
+		{
+			"name": "#4 /delivery/{id}",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "https://{{domain_name}}/delivery/:id/ship",
+					"protocol": "https",
+					"host": [
+						"{{domain_name}}"
+					],
+					"path": [
+						"delivery",
+						":id",
+						"ship"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{deliveryId}}"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "example",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "https://{{domain_name}}/delivery/:id/ship",
+							"protocol": "https",
+							"host": [
+								"{{domain_name}}"
+							],
+							"path": [
+								"delivery",
+								":id",
+								"ship"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{deliveryId}}"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Server",
+							"value": "CloudFront"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 21 Aug 2022 13:42:46 GMT"
+						},
+						{
+							"key": "Cfn-Trace-Id",
+							"value": "e83b56bb4277ed433d09ec99d542abdf"
+						},
+						{
+							"key": "X-Cache",
+							"value": "Miss from cloudfront"
+						},
+						{
+							"key": "Via",
+							"value": "1.1 485f314a42a9f55627218967d20fdc00.cloudfront.net (CloudFront)"
+						},
+						{
+							"key": "X-Amz-Cf-Pop",
+							"value": "HIO50-C2"
+						},
+						{
+							"key": "X-Amz-Cf-Id",
+							"value": "gGo2760KB3OTlw8jbl4CIhYPxN55nZb0GDGskPzY5528DA-JQoFw0w=="
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"deliveryId\": \"116\",\n    \"order\": {\n        \"orderNo\": \"20220821224230-122118\",\n        \"openedAt\": \"2022-08-21T13:42:30.475871Z\",\n        \"ordererId\": \"member123\",\n        \"ordererName\": null\n    },\n    \"items\": [\n        {\n            \"name\": \"Awesome Peach\",\n            \"quantity\": 1\n        },\n        {\n            \"name\": \"Gold Peach\",\n            \"quantity\": 2\n        },\n        {\n            \"name\": \"Sweet Peach\",\n            \"quantity\": 3\n        }\n    ],\n    \"sendingAddress\": {\n        \"name\": null,\n        \"city\": \"Blue Mountain\",\n        \"telephone\": \"010-1111-2222\",\n        \"address1\": \"Pine Valley 123\",\n        \"address2\": null\n    },\n    \"shippingAddress\": {\n        \"name\": \"Bob\",\n        \"city\": \"Seoul\",\n        \"telephone\": \"01012341234\",\n        \"address1\": \"231 Teheran-ro, Gangnam-gu, Seoul\",\n        \"address2\": \".\"\n    },\n    \"status\": \"SHIPPED\",\n    \"updatedAt\": \"2022-08-21T13:42:46.844120Z\"\n}"
+				}
+			]
+		},
+		{
+			"name": "#5 /orders/{id}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://{{domain_name}}/orders/:id",
+					"protocol": "https",
+					"host": [
+						"{{domain_name}}"
+					],
+					"path": [
+						"orders",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{orderNo}}"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "example",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{domain_name}}/orders/:id",
+							"protocol": "https",
+							"host": [
+								"{{domain_name}}"
+							],
+							"path": [
+								"orders",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{orderNo}}"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Server",
+							"value": "CloudFront"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 21 Aug 2022 13:42:50 GMT"
+						},
+						{
+							"key": "Cfn-Trace-Id",
+							"value": "d9d92b844b97c80c900b2e54799d8b30"
+						},
+						{
+							"key": "X-Cache",
+							"value": "Miss from cloudfront"
+						},
+						{
+							"key": "Via",
+							"value": "1.1 485f314a42a9f55627218967d20fdc00.cloudfront.net (CloudFront)"
+						},
+						{
+							"key": "X-Amz-Cf-Pop",
+							"value": "HIO50-C2"
+						},
+						{
+							"key": "X-Amz-Cf-Id",
+							"value": "GrmmCIDGkYZSmr4uMkgxHEaCOAplBJauN2eTqVcwE2IZWzj5Dc1C2Q=="
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"orderNumber\": \"20220821224230-122118\",\n    \"deliveryId\": \"116\",\n    \"orderLines\": [\n        {\n            \"id\": 295,\n            \"productId\": \"2021-PRODUCT-PEACH-01\",\n            \"productName\": \"Awesome Peach\",\n            \"productPrice\": 20000,\n            \"quantity\": 1,\n            \"productNameAndQuantity\": \" Awesome Peach(1)\"\n        },\n        {\n            \"id\": 296,\n            \"productId\": \"2021-PRODUCT-PEACH-02\",\n            \"productName\": \"Gold Peach\",\n            \"productPrice\": 20000,\n            \"quantity\": 2,\n            \"productNameAndQuantity\": \" Gold Peach(2)\"\n        },\n        {\n            \"id\": 297,\n            \"productId\": \"2021-PRODUCT-PEACH-03\",\n            \"productName\": \"Sweet Peach\",\n            \"productPrice\": 20000,\n            \"quantity\": 3,\n            \"productNameAndQuantity\": \" Sweet Peach(3)\"\n        }\n    ],\n    \"ordererId\": \"member123\",\n    \"ordererName\": null,\n    \"orderState\": \"CLOSED\",\n    \"createdDateTime\": 1661089350.475871,\n    \"shippingInfo\": {\n        \"city\": \"Seoul\",\n        \"telephone\": \"01012341234\",\n        \"receiver\": \"Bob\",\n        \"address1\": \"231 Teheran-ro, Gangnam-gu, Seoul\",\n        \"address2\": \".\"\n    },\n    \"orderLinesSummary\": {\n        \"orderedProductNameAndQuantities\": \" Awesome Peach(1) Gold Peach(2) Sweet Peach(3)\",\n        \"totalPrice\": 120000\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "#6 /delivery/{id}",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://{{domain_name}}/delivery/:id",
+					"protocol": "https",
+					"host": [
+						"{{domain_name}}"
+					],
+					"path": [
+						"delivery",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{deliveryId}}"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "example",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://{{domain_name}}/delivery/:id",
+							"protocol": "https",
+							"host": [
+								"{{domain_name}}"
+							],
+							"path": [
+								"delivery",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{deliveryId}}"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Server",
+							"value": "CloudFront"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 21 Aug 2022 13:42:54 GMT"
+						},
+						{
+							"key": "Cfn-Trace-Id",
+							"value": "df8cf86641eca3feaf33054ada42e3d0"
+						},
+						{
+							"key": "X-Cache",
+							"value": "Miss from cloudfront"
+						},
+						{
+							"key": "Via",
+							"value": "1.1 485f314a42a9f55627218967d20fdc00.cloudfront.net (CloudFront)"
+						},
+						{
+							"key": "X-Amz-Cf-Pop",
+							"value": "HIO50-C2"
+						},
+						{
+							"key": "X-Amz-Cf-Id",
+							"value": "Wxnw6cXbyWtCGSDJYh4Xt4f_lL6NNyytS6YI45c1lU-BXdJe-qw-Ng=="
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"deliveryId\": \"116\",\n    \"order\": {\n        \"orderNo\": \"20220821224230-122118\",\n        \"openedAt\": \"2022-08-21T13:42:30.475871Z\",\n        \"ordererId\": \"member123\",\n        \"ordererName\": null\n    },\n    \"items\": [\n        {\n            \"name\": \"Awesome Peach\",\n            \"quantity\": 1\n        },\n        {\n            \"name\": \"Gold Peach\",\n            \"quantity\": 2\n        },\n        {\n            \"name\": \"Sweet Peach\",\n            \"quantity\": 3\n        }\n    ],\n    \"sendingAddress\": {\n        \"name\": null,\n        \"city\": \"Blue Mountain\",\n        \"telephone\": \"010-1111-2222\",\n        \"address1\": \"Pine Valley 123\",\n        \"address2\": null\n    },\n    \"shippingAddress\": {\n        \"name\": \"Bob\",\n        \"city\": \"Seoul\",\n        \"telephone\": \"01012341234\",\n        \"address1\": \"231 Teheran-ro, Gangnam-gu, Seoul\",\n        \"address2\": \".\"\n    },\n    \"status\": \"SHIPPED\",\n    \"updatedAt\": \"2022-08-21T13:42:46.844120Z\"\n}"
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "deliveryId",
+			"value": ""
+		},
+		{
+			"key": "orderNo",
+			"value": ""
+		},
+		{
+			"key": "domain_name",
+			"value": "abc.cloudfront.net",
+			"type": "default"
+		}
+	]
+}

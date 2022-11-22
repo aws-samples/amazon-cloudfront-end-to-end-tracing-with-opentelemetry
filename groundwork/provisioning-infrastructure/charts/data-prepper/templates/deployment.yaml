@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: data-prepper
+  name: data-prepper
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: data-prepper
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: data-prepper
+    spec:
+      containers:
+        - args:
+            - java
+            - -jar
+            - /usr/share/data-prepper/data-prepper.jar
+            - /etc/data-prepper/pipelines.yaml
+            - /etc/data-prepper/data-prepper-config.yaml
+          image: {{ .Values.image }}
+          name: data-prepper
+          ports:
+            - containerPort: 21890
+          resources: {}
+          volumeMounts:
+            - mountPath: /etc/data-prepper
+              name: prepper-configmap-claim0
+      restartPolicy: {{ .Values.imagePullPolicy }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      volumes:
+        - name: prepper-configmap-claim0
+          configMap:
+            name: data-prepper-config

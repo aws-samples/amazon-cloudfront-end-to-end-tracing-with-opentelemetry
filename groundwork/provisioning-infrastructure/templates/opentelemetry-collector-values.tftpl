@@ -1,0 +1,60 @@
+mode: deployment
+
+config:
+  exporters:
+    otlp:
+      endpoint: ${DATA_PREPPER_ENDPOINT}
+      tls:
+        insecure: true
+  extensions:
+    health_check:
+      endpoint: 0.0.0.0:${HEALTH_CHECK_PORT}
+      path: ${HEALTH_CHECK_PATH}
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:${OTLP_GRPC_PORT}
+        http:
+          endpoint: 0.0.0.0:${OTLP_HTTP_PORT}
+    jaeger: null
+    prometheus: null
+    zipkin: null
+  service:
+    pipelines:
+      traces:
+        exporters:
+          - otlp
+        processors:
+          - memory_limiter
+          - batch
+        receivers:
+          - otlp
+      metrics: null
+      logs: null
+
+ports:
+  otlp:
+    enabled: true
+    containerPort: ${OTLP_GRPC_PORT}
+    servicePort: ${OTLP_GRPC_PORT}
+    protocol: TCP
+  otlp-http:
+    enabled: true
+    containerPort: ${OTLP_HTTP_PORT}
+    servicePort: ${OTLP_HTTP_PORT}
+    protocol: TCP
+  jaeger-compact:
+    enabled: false
+  jaeger-thrift:
+    enabled: false
+  jaeger-grpc:
+    enabled: false
+  zipkin:
+    enabled: false
+
+service:
+  type: ClusterIP
+
+ingress:
+  enabled: false

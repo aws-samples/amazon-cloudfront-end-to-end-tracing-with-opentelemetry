@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: data-prepper
+  name: data-prepper-config
+data:
+  pipelines.yaml: |
+    entry-pipeline:
+      delay: "100"
+      source:
+        otel_trace_source:
+          ssl: false
+          record_type: event
+      buffer:
+        bounded_blocking:
+          buffer_size: 10240
+          batch_size: 160
+      sink:
+        - pipeline:
+            name: "raw-pipeline"
+        - pipeline:
+            name: "service-map-pipeline"
+    raw-pipeline:
+      source:
+        pipeline:
+          name: "entry-pipeline"
+      buffer:
+        bounded_blocking:
+          buffer_size: 10240
+          batch_size: 160
+      processor:
+        - otel_trace_raw:
+      sink:
+        - opensearch:
+            hosts: [ {{ .Values.opensearch.host }} ]
+            insecure: true
+            username: {{ .Values.opensearch.username }}
+            password: {{ .Values.opensearch.password }}
+            trace_analytics_raw: true
+    service-map-pipeline:
+      delay: "100"
+      source:
+        pipeline:
+          name: "entry-pipeline"
+      buffer:
+        bounded_blocking:
+          buffer_size: 10240
+          batch_size: 160
+      processor:
+        - service_map_stateful:
+      sink:
+        - opensearch:
+            hosts: [ {{ .Values.opensearch.host }} ]
+            insecure: true
+            username: {{ .Values.opensearch.username }}
+            password: {{ .Values.opensearch.password }}
+            trace_analytics_service_map: true
+  data-prepper-config.yaml: |
+    ssl: false

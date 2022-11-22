@@ -1,0 +1,66 @@
+replicaCount: 1
+
+image:
+  repository: ${APP_DOCKER_IMAGE_REPO}
+  pullPolicy: Always
+  tag: ${APP_DOCKER_IMAGE_TAG}
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+healthCheck:
+  path: /actuator/health
+
+serviceAccount:
+  create: true
+  name: "sa-order"
+
+service:
+  type: ClusterIP
+  # type: NodePort
+  port: 8080
+  # annotations:
+  #   service.beta.kubernetes.io/aws-load-balancer-type: "external"
+  #   service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+
+resources: {}
+
+podAnnotations: {}
+
+application:
+  deliveryServiceUrl: ${DELIVERY_SERVICE_URL}
+  kafkaConnectionString: ${KAFKA_CONNECTION_STR}
+  kafkaConsumerGroupId: "e2e-sample-order"
+  kafkaAutoOffsetReset: "latest"
+  kafkaTopicNameDeliveryChange: "delivery_change"
+  dbHost: ${DB_HOST}
+  dbPort: ${DB_PORT}
+  dbName: ${DB_NAME}
+  dbUsername: ${DB_USERNAME}
+  dbPassword: ${DB_PASSWORD}
+  dbMaxPoolSize: 5
+  dbSchema: "orders"
+  redisHost: ${REDIS_HOST}
+  redisPort: ${REDIS_PORT}
+  redisPoolMaxActive: 8
+  redisPoolMaxIdle: 8
+  redisPoolMinIdle: 0
+
+telemetry:
+  metrics:
+    exporter: none
+  traces:
+    exporter: otlp
+    endpoint: ${OTEL_COLLECTOR_ENDPOINT}
+    propagators:
+      - b3
+    sampler: parentbased_always_off
+  logs:
+    loggingPatternConsole: "%d{yyyy-MM-dd HH:mm:ss} [trace_id=%X{trace_id} span_id=%X{span_id}] - %logger{36} - %msg %n"
+  instrument:
+    jdbcDatasourceEnabled: true
+    commonExperimentalSuppressMessagingReceiveSpans: true
+  resourceAttributes:
+    - "service.name=order-service"
+    - "service.namespace=e2e-blog-sample"

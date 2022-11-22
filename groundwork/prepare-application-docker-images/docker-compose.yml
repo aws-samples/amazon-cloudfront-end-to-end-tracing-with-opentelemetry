@@ -1,0 +1,107 @@
+version: '2'
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:6.2.1
+    container_name: zookeeper
+    ports:
+      - "22181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  broker:
+    image: confluentinc/cp-kafka:6.2.1  # kafka 2.8.x
+    container_name: broker
+    depends_on:
+      - zookeeper
+    ports:
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_CREATE_TOPICS: "delivery_change:1:1"
+
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    ports:
+      - "15432:5432"
+    environment:
+      TZ: Asiz/Seoul
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres1234
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+    restart: unless-stopped
+
+  redis-order:
+    image: redis:alpine
+    command: redis-server --port 6379
+    container_name: redis_order
+    hostname: redis_order
+    labels:
+      - "name=redis"
+      - "mode=standalone"
+    ports:
+      - "6379:6379"
+
+  order-service:
+    container_name: order
+    image: e2e-sample-order
+    build:
+      context: e2e-sample-order/
+      dockerfile: Dockerfile.local
+    ports:
+      - 8080:8080
+    environment:
+      DELIVERY_SERVICE_URL: http://delivery-service:8081
+      KAFKA_CONNECTION_STRING: broker:9092
+      KAFKA_CONSUMER_GROUP_ID: e2e-sample-order
+      KAFKA_CONSUMER_AUTO_OFFSET_RESET: latest
+      KAFKA_TOPIC_DELIVERY_CHANGE: delivery_change
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: postgres
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres1234
+      DB_MAX_POOL_SIZE: 1
+      DB_SCHEMA: orders
+      SPRING_REDIS_HOST: redis-order
+      SPRING_HOST_PORT: 6379
+      LOGGING_LEVEL_ORG_HIBERNATE_SQL: debug
+      SPRING_JPA_SHOWSQL: "true"
+    depends_on:
+      - broker
+      - postgres
+      - redis-order
+
+  delivery-service:
+    container_name: delivery
+    image: e2e-sample-delivery
+    build:
+      context: e2e-sample-delivery/
+      dockerfile: Dockerfile.local
+    ports:
+      - 8081:8081
+    environment:
+      KAFKA_CONNECTION_STRING: broker:9092
+      KAFKA_CONSUMER_GROUP_ID: e2e-sample-delivery
+      KAFKA_CONSUMER_AUTO_OFFSET_RESET: latest
+      KAFKA_TOPIC_DELIVERY_CHANGE: delivery_change
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: postgres
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres1234
+      DB_MAX_POOL_SIZE: 1
+      DB_SCHEMA: delivery
+    depends_on:
+      - broker
+      - postgres

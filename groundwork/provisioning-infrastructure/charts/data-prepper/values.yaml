@@ -1,0 +1,22 @@
+# Default values for data-prepper.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image: opensearchproject/data-prepper:1.5.1
+imagePullPolicy: Always
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+opensearch:
+  host: OPENSEARCH_HOST
+  username: OPENSEARCH_USERNAME
+  password: OPENSEARCH_PASSWORD
