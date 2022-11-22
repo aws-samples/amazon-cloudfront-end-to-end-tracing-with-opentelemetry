@@ -1,4 +1,4 @@
-resource "kubernetes_ingress" "k8s_ingress" {
+resource "kubernetes_ingress_v1" "k8s_ingress" {
   depends_on = [helm_release.aws-lb-controller]
   metadata {
     name      = "k8s-ingress"
@@ -19,16 +19,24 @@ resource "kubernetes_ingress" "k8s_ingress" {
       http {
         path {
           backend {
-            service_name = "e2e-sample-delivery"
-            service_port = 8081
+            service {
+              name = "e2e-sample-delivery"
+              port {
+                number = 8081
+              }
+            }
           }
           path = "/delivery*"
         }
 
         path {
           backend {
-            service_name = "e2e-sample-order"
-            service_port = 8080
+            service {
+              name = "e2e-sample-order"
+              port {
+                number = 8080
+              }
+            }
           }
           path = "/orders*"
         }
@@ -37,7 +45,7 @@ resource "kubernetes_ingress" "k8s_ingress" {
   }
 }
 
-resource "kubernetes_ingress" "k8s_ingress_otel" {
+resource "kubernetes_ingress_v1" "k8s_ingress_otel" {
   depends_on = [helm_release.aws-lb-controller]
   metadata {
     name      = "k8s-ingress-otel"
@@ -59,8 +67,12 @@ resource "kubernetes_ingress" "k8s_ingress_otel" {
       http {
         path {
           backend {
-            service_name = "opentelemetry-collector"
-            service_port = local.otel_collector_otlp_http_port
+            service {
+              name = "opentelemetry-collector"
+              port {
+                number = local.otel_collector_otlp_http_port
+              }
+            }
           }
           path = "/*"
         }
