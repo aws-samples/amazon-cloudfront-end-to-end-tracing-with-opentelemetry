@@ -100,7 +100,7 @@ resource "helm_release" "aws-lb-controller" {
   name            = "aws-load-balancer-controller"
   repository      = "https://aws.github.io/eks-charts"
   chart           = "aws-load-balancer-controller"
-  version         = "1.4.2"
+  version         = "1.4.6"
   namespace       = "kube-system"
   cleanup_on_fail = true
 
