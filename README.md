@@ -23,6 +23,90 @@ The trace data collected from each component are all sent to the [OpenTelemetry
 (Foot Note: Although we’ve adopted Amazon OpenSearch as the tracing back-end, the reader can choose from multiple open-source and commercial back-ends supported by the OpenTelemetry Collector. Choosing a collector-supported back-end would obviate the need for data conversion tool, such as Data Prepper.)  
   
 
+## Installation
+In this section, we explain steps to install the presented architecture in your AWS account.
+
+### Prerequisites
+You need an AWS account and 
+[have AWS CLI configured](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html)
+in your work environment.
+
+We use Terraform to deploy AWS resources as well as some Kubernetes objects. Thus, you might need the following tools in your work environment:
+- [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) ([check version release](https://github.com/hashicorp/terraform/releases))
+- [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl) ([check version release](https://kubernetes.io/releases/))
+- [Helm](https://helm.sh/docs/intro/install/) ([check version release](https://github.com/helm/helm/releases))
+
+To store Terraform state files in an Amazon S3 bucket, 
+you should [create a bucket](https://docs.aws.amazon.com/AmazonS3/latest/userguide/create-bucket-overview.html) 
+in your AWS account.
+
+### Host Application Images
+We use the Terraform Helm Provider to deploy sample microservices to EKS. 
+Application source codes and Dockerfiles are provided so that you can build and host application Docker images 
+in your private repositories. Please note that the EKS cluster should have access to your image repositories. 
+The simplest approach is to create ECR repositories in the same account, and we provide detailed instruction in the 
+[README](https://github.com/aws-samples/amazon-cloudfront-end-to-end-tracing-with-opentelemetry/tree/main/groundwork/prepare-application-docker-images) file.
+
+### Run Terraform
+First, we input application image repository names to Terraform. 
+Replace AWS Region and repository names in the below script and execute the script.
+```
+# Move to working directory
+cd groundwork/provisioning-infrastructure
+
+# Append sample image repository information to terraform.auto.tfvars
+export AWS_REGION="<<YOUR_REGION>>"   # ex. ap-northeast-2
+export ACCOUNT_ID=$(aws sts get-caller-identity --output json | jq ".Account" | tr -d '"')
+export ECR_URL="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+export ORDER_SERVICE_REPO_NAME="<<YOUR_IMAGE_REPO_NAME>>"    # ex. e2e-sample-order
+export DELIVERY_SERVICE_REPO_NAME="<<YOUR_IMAGE_REPO_NAME>>" # ex. e2e-sample-delivery
+
+echo order_image_repository=\"$ECR_URL/$ORDER_SERVICE_REPO_NAME\" >> ./terraform.auto.tfvars
+echo delivery_image_repository=\"$ECR_URL/$DELIVERY_SERVICE_REPO_NAME\" >> ./terraform.auto.tfvars
+```
+Then, open the [main.tf](https://github.com/aws-samples/amazon-cloudfront-end-to-end-tracing-with-opentelemetry/blob/main/groundwork/provisioning-infrastructure/main.tf) file. 
+Enter the name and region of the bucket you created earlier and save the file.
+```
+# main.tf
+
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.12.0"
+    }
+    helm = {
+      source  = "hashicorp/helm"
+      version = "~> 2.6.0"
+    }
+  }
+  backend "s3" {
+    bucket = "<<YOUR S3 BUCKET NAME>>"
+    key    = "terraform/terraform.tfstate"
+    region = "<<YOUR S3 BUCKET REGION>>"
+  }
+}
+```
+Finally, run Terraform to install resources in your account.
+```
+# Initialize Terraform providers
+terraform init
+
+# verify Terraform plan
+terraform plan
+
+# Provision infrastructure
+terraform apply
+```
+
+### Clean Up
+To clean up the resources installed with Terraform, you can run the command below:
+```
+terraform destroy
+```
+Lastly, remove the S3 bucket and application image repositories.
+
+
 ## Groundwork - IaC
 
 -   CloudFront, EKS, Kafka, RDS, Redis, Opensearch
