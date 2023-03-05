@@ -1,5 +1,8 @@
 FROM        gradle:7.4-jdk11-alpine AS build
 
+RUN         addgroup -S demo && adduser -S demo -G demo
+USER        demo
+
 WORKDIR     /home/gradle/src
 
 # download dependencies
