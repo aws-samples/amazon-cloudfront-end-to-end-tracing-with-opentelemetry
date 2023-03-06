@@ -1,7 +1,7 @@
 version: '2'
 services:
   demo-app:
-    image: e2e-demo-app
+    image: demo-app
     build:
       context: .
       dockerfile: Dockerfile
