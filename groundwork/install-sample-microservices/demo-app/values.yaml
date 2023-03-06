@@ -1,0 +1,40 @@
+replicaCount: 1
+
+image:
+  repository: ${APP_DOCKER_IMAGE_REPO}
+  pullPolicy: Always
+  tag: ${APP_DOCKER_IMAGE_TAG}
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+healthCheck:
+  path: /actuator/health
+
+serviceAccount:
+  create: true
+  name: "sa-delivery"
+
+service:
+  type: ClusterIP
+  port: 8080
+
+resources: {}
+
+podAnnotations: {}
+
+telemetry:
+  metrics:
+    exporter: none
+  traces:
+    exporter: none
+    endpoint: ${OTEL_COLLECTOR_ENDPOINT}
+    propagators:
+      - b3
+    sampler: parentbased_always_off
+  logs:
+    loggingPatternConsole: "%d{yyyy-MM-dd HH:mm:ss} [trace_id=%X{trace_id} span_id=%X{span_id}] - %logger{36} - %msg %n"
+  resourceAttributes:
+    - "service.name=demo-app"
+    - "service.namespace=e2e-blog-sample"
