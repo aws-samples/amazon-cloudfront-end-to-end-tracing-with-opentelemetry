@@ -54,7 +54,3 @@ provider "helm" {
     }
   }
 }
-
-resource "aws_s3_bucket" "e2e-tracing-opentelemetry" {
-  bucket = "e2e-tracing-opentelemetry"
-}
