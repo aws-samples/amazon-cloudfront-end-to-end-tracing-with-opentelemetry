@@ -10,9 +10,9 @@ terraform {
     }
   }
   backend "s3" {
-    bucket = "e2e-tracing-opentelemetry"
+    bucket = "<<YOUR S3 BUCKET NAME>>"
     key    = "terraform/terraform.tfstate"
-    region = "ap-northeast-2"
+    region = "<<YOUR S3 BUCKET REGION>>"
   }
 }
 
