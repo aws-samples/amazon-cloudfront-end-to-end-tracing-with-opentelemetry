@@ -58,11 +58,9 @@ cd groundwork/provisioning-infrastructure
 export AWS_REGION="<<YOUR_REGION>>"   # ex. ap-northeast-2
 export ACCOUNT_ID=$(aws sts get-caller-identity --output json | jq ".Account" | tr -d '"')
 export ECR_URL="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
-export ORDER_SERVICE_REPO_NAME="<<YOUR_IMAGE_REPO_NAME>>"    # ex. e2e-sample-order
-export DELIVERY_SERVICE_REPO_NAME="<<YOUR_IMAGE_REPO_NAME>>" # ex. e2e-sample-delivery
+export DEMO_APP_REPO_NAME="demo-app"
 
-echo order_image_repository=\"$ECR_URL/$ORDER_SERVICE_REPO_NAME\" >> ./terraform.auto.tfvars
-echo delivery_image_repository=\"$ECR_URL/$DELIVERY_SERVICE_REPO_NAME\" >> ./terraform.auto.tfvars
+echo demo_app_image_repository=\"$ECR_URL/$DEMO_APP_REPO_NAME\" >> ./terraform.auto.tfvars
 ```
 Then, open the [main.tf](https://github.com/aws-samples/amazon-cloudfront-end-to-end-tracing-with-opentelemetry/blob/main/groundwork/provisioning-infrastructure/main.tf) file. 
 Enter the name and region of the bucket you created earlier and save the file.

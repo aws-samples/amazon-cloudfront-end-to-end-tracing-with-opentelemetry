@@ -1,6 +1,0 @@
-apiVersion: v2
-name: e2e-sample-delivery
-description: A Helm chart for Sample Delivery Microservice
-type: application
-version: 0.1.0
-appVersion: "1.16.0"
