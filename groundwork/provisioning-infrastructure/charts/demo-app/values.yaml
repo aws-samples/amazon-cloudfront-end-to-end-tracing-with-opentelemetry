@@ -28,7 +28,7 @@ telemetry:
   metrics:
     exporter: none
   traces:
-    exporter: none
+    exporter: otlp
     endpoint: ${OTEL_COLLECTOR_ENDPOINT}
     propagators:
       - b3
