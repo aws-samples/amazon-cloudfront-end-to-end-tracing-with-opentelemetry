@@ -10,9 +10,9 @@ terraform {
     }
   }
   backend "s3" {
-    bucket = "e2e-tracing-opentelemetry"
+    bucket = "<<YOUR S3 BUCKET NAME>>"
     key    = "terraform/terraform.tfstate"
-    region = "ap-northeast-2"
+    region = "<<YOUR S3 BUCKET REGION>>"
   }
 }
 
@@ -53,8 +53,4 @@ provider "helm" {
       args        = ["eks", "get-token", "--cluster-name", data.aws_eks_cluster.cluster.id, "--region", var.region]
     }
   }
-}
-
-resource "aws_s3_bucket" "e2e-tracing-opentelemetry" {
-  bucket = "e2e-tracing-opentelemetry"
 }

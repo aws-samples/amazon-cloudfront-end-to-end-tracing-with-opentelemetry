@@ -20,25 +20,13 @@ resource "kubernetes_ingress_v1" "k8s_ingress" {
         path {
           backend {
             service {
-              name = "e2e-sample-delivery"
-              port {
-                number = 8081
-              }
-            }
-          }
-          path = "/delivery*"
-        }
-
-        path {
-          backend {
-            service {
-              name = "e2e-sample-order"
+              name = "demo-app"
               port {
                 number = 8080
               }
             }
           }
-          path = "/orders*"
+          path = "/*"
         }
       }
     }

@@ -1,5 +1,0 @@
-rootProject.name = 'e2e-sample-order'
-include ':interface'
-include ':application'
-include ':domain'
-include ':infrastructure'

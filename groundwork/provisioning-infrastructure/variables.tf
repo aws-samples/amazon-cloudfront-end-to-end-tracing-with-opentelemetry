@@ -61,11 +61,7 @@ variable "trace_sampling_rate" {
   description = "Trace sampling rate between 0 and 100 (default: always)"
 }
 
-variable "order_image_repository" {}
-variable "order_image_tag" {
-  default = "latest"
-}
-variable "delivery_image_repository" {}
-variable "delivery_image_tag" {
+variable "demo_app_repository" {}
+variable "demo_app_tag" {
   default = "latest"
 }
