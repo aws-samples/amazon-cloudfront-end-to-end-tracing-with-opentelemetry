@@ -36,16 +36,16 @@ spec:
           volumeMounts:
             - mountPath: /etc/data-prepper
               name: prepper-configmap-claim0
-          securityContext:
-            runAsNonRoot: true
-            runAsUser: 10001
-            readOnlyRootFilesystem: true
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
-            seccompProfile:
-              type: RuntimeDefault
+          # securityContext:
+          #   runAsNonRoot: true
+          #   runAsUser: 10001
+          #   readOnlyRootFilesystem: true
+          #   allowPrivilegeEscalation: false
+          #   capabilities:
+          #     drop:
+          #       - ALL
+          #   seccompProfile:
+          #     type: RuntimeDefault
       restartPolicy: {{ .Values.imagePullPolicy }}
       serviceAccountName: {{ .Values.serviceAccount.name }}
       volumes:
