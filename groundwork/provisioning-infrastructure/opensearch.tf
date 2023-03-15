@@ -1,4 +1,8 @@
 resource "aws_opensearch_domain" "this" {
+  # checkov:skip=CKV_AWS_137: This is just a sample for demonstration purposes, so we will use public domain here.
+  # checkov:skip=CKV_AWS_248: This is just a sample for demonstration purposes, so we will use public domain here.
+  # checkov:skip=CKV_AWS_247: This is just a sample for demonstration purposes, so we don't need to encrypt all data with CMK here.
+  # checkov:skip=CKV2_AWS_59: This is just a sample for demonstration purposes, so we don't need a dedicated master node here.
   domain_name    = "opensearch"
   engine_version = "Elasticsearch_7.10"
 
@@ -33,6 +37,10 @@ resource "aws_opensearch_domain" "this" {
     enforce_https       = true
     tls_security_policy = "Policy-Min-TLS-1-2-2019-07"
   }
+  log_publishing_options {
+    cloudwatch_log_group_arn = aws_cloudwatch_log_group.opensearch.arn
+    log_type                 = "INDEX_SLOW_LOGS"
+  }
 
   access_policies = <<POLICY
   {
@@ -51,3 +59,34 @@ resource "aws_opensearch_domain" "this" {
 POLICY
 
 }
+
+resource "aws_cloudwatch_log_group" "opensearch" {
+  # checkov:skip=CKV_AWS_158: This is just a sample for demonstration purposes, so we don't need KMS key here.
+  name              = "opensearch"
+  retention_in_days = 7
+}
+
+data "aws_iam_policy_document" "opensearch_log_group" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["es.amazonaws.com"]
+    }
+
+    actions = [
+      "logs:PutLogEvents",
+      "logs:PutLogEventsBatch",
+      "logs:CreateLogStream",
+    ]
+
+    resources = ["arn:aws:logs:*"]
+  }
+}
+
+resource "aws_cloudwatch_log_resource_policy" "opensearch_log_group" {
+  policy_name     = "opensearch_log_group"
+  policy_document = data.aws_iam_policy_document.opensearch_log_group.json
+}
+

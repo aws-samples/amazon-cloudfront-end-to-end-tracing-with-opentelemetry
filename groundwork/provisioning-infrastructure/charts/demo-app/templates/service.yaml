@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "demo-app.fullname" . }}
+  namespace: {{ .Values.namespace | default .Release.Namespace }}
   labels:
     {{- include "demo-app.labels" . | nindent 4 }}
 spec:

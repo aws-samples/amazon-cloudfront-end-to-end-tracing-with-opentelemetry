@@ -1,10 +1,12 @@
 locals {
-  demo_app_port    = 8080
+  demo_app_port = 8080
 }
 
 resource "helm_release" "demo-app" {
   name  = "demo-app"
+  namespace = var.k8s_namespace
   chart = "./charts/demo-app"
+  create_namespace = true
 
   set {
     name  = "image.repository"
@@ -17,5 +19,10 @@ resource "helm_release" "demo-app" {
   set {
     name  = "telemetry.traces.endpoint"
     value = format("http://opentelemetry-collector.default.svc.cluster.local:%d", local.otel_collector_otlp_grpc_port)
+  }
+
+  set {
+    name = "namespace"
+    value = var.k8s_namespace
   }
 }

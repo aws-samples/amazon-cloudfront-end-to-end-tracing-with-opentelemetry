@@ -4,6 +4,7 @@ metadata:
   labels:
     app: data-prepper
   name: data-prepper-config
+  namespace: {{ .Values.namespace | default .Release.Namespace }}
 data:
   pipelines.yaml: |
     entry-pipeline:

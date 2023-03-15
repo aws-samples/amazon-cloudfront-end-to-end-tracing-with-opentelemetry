@@ -4,6 +4,7 @@ metadata:
   labels:
     app: data-prepper
   name: data-prepper-metrics
+  namespace: {{ .Values.namespace | default .Release.Namespace }}
 spec:
   type: NodePort
   ports:

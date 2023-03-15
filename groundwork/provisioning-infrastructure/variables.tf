@@ -65,3 +65,7 @@ variable "demo_app_repository" {}
 variable "demo_app_tag" {
   default = "latest"
 }
+
+variable "k8s_namespace" {
+  default = "e2e-blog-sample"
+}

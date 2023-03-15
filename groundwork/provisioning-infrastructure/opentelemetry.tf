@@ -13,6 +13,7 @@ locals {
 resource "helm_release" "data-prepper" {
   chart      = "./charts/data-prepper"
   name       = "data-prepper"
+  namespace = "kube-system"
   depends_on = [aws_opensearch_domain.this]
 
   set {
@@ -27,6 +28,11 @@ resource "helm_release" "data-prepper" {
     name  = "opensearch.password"
     value = var.opensearch_master_password
   }
+
+  set {
+    name = "namespace"
+    value = "kube-system"
+  }
 }
 
 ###########################
@@ -38,7 +44,7 @@ resource "helm_release" "opentelemetry-collector" {
   repository      = "https://open-telemetry.github.io/opentelemetry-helm-charts"
   chart           = "opentelemetry-collector"
   version         = "0.37.0"
-  namespace       = "default"
+  namespace       = "kube-system"
   cleanup_on_fail = true
   depends_on      = [helm_release.data-prepper]
 

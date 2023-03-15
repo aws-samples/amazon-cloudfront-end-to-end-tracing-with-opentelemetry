@@ -19,4 +19,3 @@ serviceAccount:
 opensearch:
   host: OPENSEARCH_HOST
   username: OPENSEARCH_USERNAME
-  password: OPENSEARCH_PASSWORD

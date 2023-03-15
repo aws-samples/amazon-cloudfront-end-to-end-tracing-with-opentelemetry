@@ -4,6 +4,7 @@ metadata:
   labels:
     app: data-prepper
   name: data-prepper
+  namespace: {{ .Values.namespace | default .Release.Namespace }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -24,13 +25,27 @@ spec:
             - /etc/data-prepper/pipelines.yaml
             - /etc/data-prepper/data-prepper-config.yaml
           image: {{ .Values.image }}
+          imagePullPolicy: Always
           name: data-prepper
           ports:
             - containerPort: 21890
-          resources: {}
+          resources: 
+            limits:
+              memory: 4G
+              cpu: 1
           volumeMounts:
             - mountPath: /etc/data-prepper
               name: prepper-configmap-claim0
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 10001
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
       restartPolicy: {{ .Values.imagePullPolicy }}
       serviceAccountName: {{ .Values.serviceAccount.name }}
       volumes:

@@ -10,9 +10,9 @@ terraform {
     }
   }
   backend "s3" {
-    bucket = "<<YOUR S3 BUCKET NAME>>"
+    bucket = "095873295160-blog-bucket"
     key    = "terraform/terraform.tfstate"
-    region = "<<YOUR S3 BUCKET REGION>>"
+    region = "ap-northeast-2"
   }
 }
 
