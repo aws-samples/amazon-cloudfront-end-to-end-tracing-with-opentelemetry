@@ -7,6 +7,7 @@ resource "helm_release" "demo-app" {
   namespace        = var.k8s_namespace
   chart            = "./charts/demo-app"
   create_namespace = true
+  force_update = true
 
   set {
     name  = "image.repository"

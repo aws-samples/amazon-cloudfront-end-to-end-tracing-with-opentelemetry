@@ -19,7 +19,6 @@ serviceAccount:
 securityContext:
   runAsNonRoot: true
   runAsUser: 10000
-  readOnlyFilesystem: true
   allowPrivilegeEscalation: false
   readOnlyRootFilesystem: true
   capabilities:

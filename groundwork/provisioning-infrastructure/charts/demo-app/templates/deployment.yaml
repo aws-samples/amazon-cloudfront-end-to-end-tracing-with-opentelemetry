@@ -6,7 +6,10 @@ metadata:
   labels:
     {{- include "demo-app.labels" . | nindent 4 }}
   annotations:
-    checkov.io/skip1: CKV_K8S_43=This is just a sample for demonstration purposes, so we don't need to use image digest here.
+    checkov.io/skip1: CKV_K8S_22=This is just a sample for demonstration purposes, so we don't need read-only filesystem here.
+    checkov.io/skip3: CKV_K8S_23=This is just a sample for demonstration purposes, so we don't care about container user here.
+    checkov.io/skip2: CKV_K8S_40=This is just a sample for demonstration purposes, so we don't care about UID here.
+    checkov.io/skip4: CKV_K8S_43=This is just a sample for demonstration purposes, so we don't care about image digest here.
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:

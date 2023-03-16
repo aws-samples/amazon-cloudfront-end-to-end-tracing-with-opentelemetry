@@ -22,8 +22,8 @@ service:
 
 resources: 
   limits:
-    cpu: "500m"
-    memory: "256Mi"
+    cpu: "1000m"
+    memory: "512Mi"
 
 podAnnotations: {}
 
@@ -43,11 +43,10 @@ telemetry:
     - "service.namespace=e2e-blog-sample"
 
 securityContext:
-  runAsNonRoot: true
-  runAsUser: 10000
-  readOnlyFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 10000
   allowPrivilegeEscalation: false
-  readOnlyRootFilesystem: true
+  # readOnlyRootFilesystem: true
   capabilities:
     drop:
       - NET_RAW
