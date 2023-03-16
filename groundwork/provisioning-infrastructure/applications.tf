@@ -3,9 +3,9 @@ locals {
 }
 
 resource "helm_release" "demo-app" {
-  name  = "demo-app"
-  namespace = var.k8s_namespace
-  chart = "./charts/demo-app"
+  name             = "demo-app"
+  namespace        = var.k8s_namespace
+  chart            = "./charts/demo-app"
   create_namespace = true
 
   set {
@@ -22,7 +22,7 @@ resource "helm_release" "demo-app" {
   }
 
   set {
-    name = "namespace"
+    name  = "namespace"
     value = var.k8s_namespace
   }
 }

@@ -11,10 +11,11 @@ locals {
 ###########################
 
 resource "helm_release" "data-prepper" {
-  chart      = "./charts/data-prepper"
-  name       = "data-prepper"
-  namespace = "kube-system"
-  depends_on = [aws_opensearch_domain.this]
+  chart        = "./charts/data-prepper"
+  name         = "data-prepper"
+  namespace    = "kube-system"
+  depends_on   = [aws_opensearch_domain.this]
+  force_update = true
 
   set {
     name  = "opensearch.host"
@@ -30,7 +31,7 @@ resource "helm_release" "data-prepper" {
   }
 
   set {
-    name = "namespace"
+    name  = "namespace"
     value = "kube-system"
   }
 }

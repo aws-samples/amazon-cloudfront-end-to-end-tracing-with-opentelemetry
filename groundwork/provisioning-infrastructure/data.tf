@@ -8,7 +8,7 @@ data "aws_eks_cluster_auth" "cluster" {
 }
 
 data "aws_lb" "k8s_ingress_lb" {
-  name      = "k8s-ingress"
+  name = "k8s-ingress"
   depends_on = [
     kubernetes_ingress_v1.k8s_ingress
   ]

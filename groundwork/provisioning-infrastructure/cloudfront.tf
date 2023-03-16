@@ -1,9 +1,9 @@
 resource "aws_cloudfront_distribution" "e2e_tracing" {
-	# checkov:skip=CKV2_AWS_47: This is just a sample for demonstration purposes, so we don't need WAF enabled here.
-	# checkov:skip=CKV_AWS_68: This is just a sample for demonstration purposes, so we don't need WAF enabled here.
-	# checkov:skip=CKV_AWS_86: This is just a sample for demonstration purposes, so we don't need cloudfront access log configuration here.
+  # checkov:skip=CKV2_AWS_47: This is just a sample for demonstration purposes, so we don't need WAF enabled here.
+  # checkov:skip=CKV_AWS_68: This is just a sample for demonstration purposes, so we don't need WAF enabled here.
+  # checkov:skip=CKV_AWS_86: This is just a sample for demonstration purposes, so we don't need cloudfront access log configuration here.
   # checkov:skip=CKV2_AWS_42: This is just a sample for demonstration purposes, so we don't need a custom SSL certificate here.
-	# checkov:skip=CKV_AWS_174: This is just a sample for demonstration purposes, so we don't need a custom SSL certificate here.
+  # checkov:skip=CKV_AWS_174: This is just a sample for demonstration purposes, so we don't need a custom SSL certificate here.
   enabled         = true
   is_ipv6_enabled = false
   price_class     = "PriceClass_200"

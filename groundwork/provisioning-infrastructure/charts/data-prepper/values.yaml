@@ -16,6 +16,17 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
-opensearch:
-  host: OPENSEARCH_HOST
-  username: OPENSEARCH_USERNAME
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 10000
+  readOnlyFilesystem: true
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - NET_RAW
+      - ALL
+
+podSecurityContext:
+  seccompProfile:
+    type: RuntimeDefault
