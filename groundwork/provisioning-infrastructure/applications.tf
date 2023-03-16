@@ -19,7 +19,7 @@ resource "helm_release" "demo-app" {
   }
   set {
     name  = "telemetry.traces.endpoint"
-    value = format("http://opentelemetry-collector.default.svc.cluster.local:%d", local.otel_collector_otlp_grpc_port)
+    value = format("http://opentelemetry-collector.kube-system.svc.cluster.local:%d", local.otel_collector_otlp_grpc_port)
   }
 
   set {

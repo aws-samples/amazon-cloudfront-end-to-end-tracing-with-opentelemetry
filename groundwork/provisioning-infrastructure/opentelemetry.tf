@@ -1,5 +1,5 @@
 locals {
-  data_prepper_endpoint            = "data-prepper-headless.default.svc.cluster.local:21890"
+  data_prepper_endpoint            = "data-prepper-headless.kube-system.svc.cluster.local:21890"
   otel_collector_otlp_grpc_port    = 4317
   otel_collector_otlp_http_port    = 4318
   otel_collector_health_check_port = 13133
