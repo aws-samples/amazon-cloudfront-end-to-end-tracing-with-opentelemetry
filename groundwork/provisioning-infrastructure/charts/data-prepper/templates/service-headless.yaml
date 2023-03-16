@@ -4,6 +4,7 @@ metadata:
   labels:
     app: data-prepper
   name: data-prepper-headless
+  namespace: {{ .Values.namespace | default "kube-system"}}
 spec:
   clusterIP: None
   ports:

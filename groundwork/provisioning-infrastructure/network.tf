@@ -1,9 +1,13 @@
 # vpc
 resource "aws_vpc" "this" {
+  # checkov:skip=CKV2_AWS_11: This is just a sample for demonstration purposes, so we don't need to configure VPC flow log here.
   cidr_block           = var.cidr
   enable_dns_hostnames = true
   enable_dns_support   = true
   instance_tenancy     = "default"
+}
+resource "aws_default_security_group" "default" {
+  vpc_id = aws_vpc.this.id
 }
 
 # subnets

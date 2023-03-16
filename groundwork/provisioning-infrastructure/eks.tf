@@ -2,8 +2,10 @@
 # EKS CONTROL PLANE AND MANAGED WORKER NODES DEPLOYED BY THIS MODULE
 # ---------------------------------------------------------------------------------------------------------------------
 resource "aws_kms_key" "eks" {
-  description = "EKS Secret Encryption Key"
+  description         = "EKS Secret Encryption Key"
+  enable_key_rotation = true
 }
+
 
 module "eks" {
   source          = "terraform-aws-modules/eks/aws"
@@ -73,6 +75,7 @@ resource "aws_security_group_rule" "egress_all" {
   protocol          = "-1"
   cidr_blocks       = ["0.0.0.0/0"]
   from_port         = 0
+  description       = "egress_all"
 }
 
 resource "aws_security_group_rule" "alb_webhook" {

@@ -2,7 +2,7 @@ resource "kubernetes_ingress_v1" "k8s_ingress" {
   depends_on = [helm_release.aws-lb-controller]
   metadata {
     name      = "k8s-ingress"
-    namespace = "default"
+    namespace = var.k8s_namespace
     annotations = {
       "alb.ingress.kubernetes.io/load-balancer-name" = "k8s-ingress"
       "alb.ingress.kubernetes.io/scheme"             = "internet-facing"
@@ -37,7 +37,7 @@ resource "kubernetes_ingress_v1" "k8s_ingress_otel" {
   depends_on = [helm_release.aws-lb-controller]
   metadata {
     name      = "k8s-ingress-otel"
-    namespace = "default"
+    namespace = "kube-system"
     annotations = {
       "alb.ingress.kubernetes.io/load-balancer-name" = "k8s-ingress"
       "alb.ingress.kubernetes.io/scheme"             = "internet-facing"

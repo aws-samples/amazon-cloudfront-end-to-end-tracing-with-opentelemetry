@@ -4,6 +4,7 @@ metadata:
   labels:
     app: data-prepper
   name: data-prepper-metrics
+  namespace: {{ .Values.namespace | default "kube-system"}}
 spec:
   type: NodePort
   ports:

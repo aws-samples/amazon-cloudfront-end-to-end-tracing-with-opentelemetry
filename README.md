@@ -58,7 +58,7 @@ export ACCOUNT_ID=$(aws sts get-caller-identity --output json | jq ".Account" | 
 export ECR_URL="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
 export DEMO_APP_REPO_NAME="demo-app"
 
-echo demo_app_image_repository=\"$ECR_URL/$DEMO_APP_REPO_NAME\" >> ./terraform.auto.tfvars
+echo demo_app_repository=\"$ECR_URL/$DEMO_APP_REPO_NAME\" >> ./terraform.auto.tfvars
 ```
 Then, open the [main.tf](https://github.com/aws-samples/amazon-cloudfront-end-to-end-tracing-with-opentelemetry/blob/main/groundwork/provisioning-infrastructure/main.tf) file. 
 Enter the name and region of the bucket you created earlier and save the file.

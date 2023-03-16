@@ -4,6 +4,7 @@ metadata:
   labels:
     app: data-prepper
   name: data-prepper
+  namespace: {{ .Values.namespace | default "kube-system"}}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -24,10 +25,14 @@ spec:
             - /etc/data-prepper/pipelines.yaml
             - /etc/data-prepper/data-prepper-config.yaml
           image: {{ .Values.image }}
+          imagePullPolicy: Always
           name: data-prepper
           ports:
             - containerPort: 21890
-          resources: {}
+          resources: 
+            limits:
+              memory: 4G
+              cpu: 1
           volumeMounts:
             - mountPath: /etc/data-prepper
               name: prepper-configmap-claim0

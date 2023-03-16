@@ -20,7 +20,10 @@ service:
   type: ClusterIP
   port: 8080
 
-resources: {}
+resources: 
+  limits:
+    cpu: "1000m"
+    memory: "512Mi"
 
 podAnnotations: {}
 
@@ -38,3 +41,17 @@ telemetry:
   resourceAttributes:
     - "service.name=demo-app"
     - "service.namespace=e2e-blog-sample"
+
+securityContext:
+  # runAsNonRoot: true
+  # runAsUser: 10000
+  allowPrivilegeEscalation: false
+  # readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - NET_RAW
+      - ALL
+
+podSecurityContext:
+  seccompProfile:
+    type: RuntimeDefault
