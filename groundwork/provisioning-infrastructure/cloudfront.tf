@@ -156,7 +156,7 @@ resource "aws_lambda_function" "cf_tracing_processor" {
   function_name = "cf_tracing_processor"
   role          = aws_iam_role.iam_for_lambda.arn
 
-  runtime  = "nodejs14.x"
+  runtime  = "nodejs16.x"
   handler  = "cf-tracing-processor.handler"
   filename = "${path.module}/cf_tracing_processor.zip"
 
