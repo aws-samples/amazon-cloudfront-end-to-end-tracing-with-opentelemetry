@@ -69,8 +69,17 @@ resource "aws_cloudfront_distribution" "e2e_tracing" {
     compress               = true
     viewer_protocol_policy = "redirect-to-https"
   }
+
+  logging_config {
+    include_cookies = false
+    bucket          = aws_s3_bucket.e2e_tracing.bucket_domain_name
+    prefix          = "e2e"
+  }
 }
 
+resource "aws_s3_bucket" "e2e_tracing" {
+  bucket = uuid()
+}
 
 data "aws_cloudfront_cache_policy" "cache_disabled" {
   name = "Managed-CachingDisabled"
