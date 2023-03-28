@@ -7,7 +7,8 @@ resource "aws_opensearch_domain" "this" {
   engine_version = "Elasticsearch_7.10"
 
   cluster_config {
-    instance_type = var.opensearch_instance_type
+    instance_type          = var.opensearch_instance_type
+    zone_awareness_enabled = true
   }
 
   ebs_options {
