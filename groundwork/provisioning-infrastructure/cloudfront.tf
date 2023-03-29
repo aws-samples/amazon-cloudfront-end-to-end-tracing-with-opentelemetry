@@ -69,8 +69,17 @@ resource "aws_cloudfront_distribution" "e2e_tracing" {
     compress               = true
     viewer_protocol_policy = "redirect-to-https"
   }
+
+  logging_config {
+    include_cookies = false
+    bucket          = aws_s3_bucket.e2e_tracing.bucket_domain_name
+    prefix          = "e2e"
+  }
 }
 
+resource "aws_s3_bucket" "e2e_tracing" {
+  bucket = uuid()
+}
 
 data "aws_cloudfront_cache_policy" "cache_disabled" {
   name = "Managed-CachingDisabled"
@@ -156,7 +165,7 @@ resource "aws_lambda_function" "cf_tracing_processor" {
   function_name = "cf_tracing_processor"
   role          = aws_iam_role.iam_for_lambda.arn
 
-  runtime  = "nodejs14.x"
+  runtime  = "nodejs16.x"
   handler  = "cf-tracing-processor.handler"
   filename = "${path.module}/cf_tracing_processor.zip"
 

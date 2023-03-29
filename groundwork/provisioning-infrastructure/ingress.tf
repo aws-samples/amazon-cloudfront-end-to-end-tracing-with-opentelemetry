@@ -10,6 +10,7 @@ resource "kubernetes_ingress_v1" "k8s_ingress" {
       "alb.ingress.kubernetes.io/healthcheck-path"   = "/actuator/health"
       "alb.ingress.kubernetes.io/group.name"         = "k8s-ingress"
       "alb.ingress.kubernetes.io/target-type"        = "ip"
+      "alb.ingress.kubernetes.io/security-groups"    = aws_security_group.alb_sg.id
     }
   }
 
