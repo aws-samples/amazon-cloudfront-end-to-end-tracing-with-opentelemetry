@@ -6,6 +6,7 @@ resource "kubernetes_ingress_v1" "k8s_ingress" {
     annotations = {
       "alb.ingress.kubernetes.io/load-balancer-name" = "k8s-ingress"
       "alb.ingress.kubernetes.io/scheme"             = "internet-facing"
+      "alb.ingress.kubernetes.io/listen-ports"       = "[{\"HTTP\": 80}]"
       "alb.ingress.kubernetes.io/healthcheck-port"   = "traffic-port"
       "alb.ingress.kubernetes.io/healthcheck-path"   = "/actuator/health"
       "alb.ingress.kubernetes.io/group.name"         = "k8s-ingress"
