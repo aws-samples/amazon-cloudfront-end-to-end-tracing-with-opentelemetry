@@ -63,16 +63,6 @@ resource "aws_subnet" "eks-private" {
   )
 }
 
-resource "aws_subnet" "backing-private" {
-  count             = length(var.azs)
-  vpc_id            = aws_vpc.this.id
-  cidr_block        = cidrsubnet(cidrsubnet(var.cidr, 4, 2), 2, count.index)
-  availability_zone = var.azs[count.index]
-  tags = merge(
-    { "Name" = "backing-private-${var.azs[count.index]}" }
-  )
-}
-
 # default network ACL
 resource "aws_default_network_acl" "dev_default" {
   default_network_acl_id = aws_vpc.this.default_network_acl_id
@@ -97,8 +87,7 @@ resource "aws_default_network_acl" "dev_default" {
 
   subnet_ids = flatten([
     aws_subnet.public.*.id,
-    aws_subnet.eks-private.*.id,
-    aws_subnet.backing-private.*.id
+    aws_subnet.eks-private.*.id
   ])
 }
 
@@ -154,12 +143,5 @@ resource "aws_route_table_association" "eks-private" {
   count = length(var.azs)
 
   subnet_id      = aws_subnet.eks-private.*.id[count.index]
-  route_table_id = aws_route_table.private.*.id[count.index]
-}
-
-resource "aws_route_table_association" "backing-private" {
-  count = length(var.azs)
-
-  subnet_id      = aws_subnet.backing-private.*.id[count.index]
   route_table_id = aws_route_table.private.*.id[count.index]
 }
