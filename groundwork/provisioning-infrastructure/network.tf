@@ -163,9 +163,3 @@ resource "aws_route_table_association" "backing-private" {
   subnet_id      = aws_subnet.backing-private.*.id[count.index]
   route_table_id = aws_route_table.private.*.id[count.index]
 }
-
-# backing service subnet group
-resource "aws_db_subnet_group" "backing-private" {
-  name       = "sbn-group-dev-backing-private"
-  subnet_ids = aws_subnet.backing-private.*.id
-}
