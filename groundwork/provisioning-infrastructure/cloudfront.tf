@@ -180,6 +180,7 @@ resource "aws_security_group" "cf_tracing_processor" {
   vpc_id      = aws_vpc.this.id
 
   egress {
+    description = "to otel-collector endpoint"
     from_port        = local.otel_collector_otlp_http_port
     to_port          = local.otel_collector_otlp_http_port
     protocol         = "tcp"

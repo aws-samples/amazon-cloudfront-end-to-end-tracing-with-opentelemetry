@@ -35,6 +35,7 @@ resource "aws_security_group" "alb_sg" {
   }
 
   egress {
+    description      = "allow all"
     from_port        = 0
     to_port          = 0
     protocol         = "-1"
