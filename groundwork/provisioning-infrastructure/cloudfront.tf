@@ -114,8 +114,8 @@ resource "aws_cloudwatch_log_group" "cf_tracing_response" {
   retention_in_days = 7
 }
 
-resource "aws_iam_role" "iam_for_lambda" {
-  name = "iam_for_lambda"
+resource "aws_iam_role" "cf_tracing_processor" {
+  name = "cf_tracing_processor"
 
   assume_role_policy = <<EOF
 {
@@ -132,30 +132,7 @@ resource "aws_iam_role" "iam_for_lambda" {
   ]
 }
 EOF
-  inline_policy {
-    name = "LambdaCloudWatchPolicy"
-
-    policy = jsonencode({
-      Version = "2012-10-17"
-      Statement = [
-        {
-          "Effect" : "Allow",
-          "Action" : "logs:CreateLogGroup",
-          "Resource" : "arn:aws:logs:us-east-1:${data.aws_caller_identity.current.account_id}:*"
-        },
-        {
-          "Effect" : "Allow",
-          "Action" : [
-            "logs:CreateLogStream",
-            "logs:PutLogEvents"
-          ],
-          "Resource" : [
-            "arn:aws:logs:us-east-1:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/cf_tracing_processor:*"
-          ]
-        }
-      ]
-    })
-  }
+  managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"]
 }
 
 data "archive_file" "cf_tracing_processor" {
@@ -171,13 +148,13 @@ resource "aws_lambda_function" "cf_tracing_processor" {
   # checkov:skip=CKV_AWS_173: This is just a sample for demonstration purposes, so we don't need a KMS encryption here.
   # checkov:skip=CKV_AWS_116: This is just a sample for demonstration purposes, so we don't need a deadletter queue here.
   function_name = "cf_tracing_processor"
-  role          = aws_iam_role.iam_for_lambda.arn
+  role          = aws_iam_role.cf_tracing_processor.arn
 
   runtime  = "nodejs16.x"
   handler  = "cf-tracing-processor.handler"
   filename = "${path.module}/cf_tracing_processor.zip"
 
-  provider = aws.us
+  provider = aws.seoul
 
   environment {
     variables = {
@@ -190,7 +167,25 @@ resource "aws_lambda_function" "cf_tracing_processor" {
   tracing_config {
     mode = "Active"
   }
+  vpc_config {
+    security_group_ids = [aws_security_group.cf_tracing_processor.id]
+    subnet_ids         = aws_subnet.eks-private.*.id
+  }
   reserved_concurrent_executions = 100
+}
+
+resource "aws_security_group" "cf_tracing_processor" {
+  name        = "cf_tracing_processor"
+  description = "Allow HTTP outbound traffic to otel-collector"
+  vpc_id      = aws_vpc.this.id
+
+  egress {
+    from_port        = local.otel_collector_otlp_http_port
+    to_port          = local.otel_collector_otlp_http_port
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
 }
 
 resource "aws_cloudwatch_log_group" "cf_tracing_processor" {
@@ -207,6 +202,8 @@ resource "aws_cloudwatch_log_subscription_filter" "cf_tracing_response_filter" {
   destination_arn = aws_lambda_function.cf_tracing_processor.arn
 
   provider = aws.us
+
+  depends_on = [aws_lambda_permission.allow_cloudwatch]
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch" {
@@ -216,7 +213,7 @@ resource "aws_lambda_permission" "allow_cloudwatch" {
   principal     = "logs.us-east-1.amazonaws.com"
   source_arn    = "${aws_cloudwatch_log_group.cf_tracing_response.arn}:*"
 
-  provider = aws.us
+  provider = aws.seoul
 }
 
 
