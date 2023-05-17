@@ -12,6 +12,7 @@ resource "aws_default_security_group" "default" {
 
 # alb security group
 resource "aws_security_group" "alb_sg" {
+  # checkov:skip=CKV2_AWS_5: This security group is attached to the ALB defined in ingress.tf
   name        = "allow_http"
   description = "Allow HTTP inbound traffic"
   vpc_id      = aws_vpc.this.id
