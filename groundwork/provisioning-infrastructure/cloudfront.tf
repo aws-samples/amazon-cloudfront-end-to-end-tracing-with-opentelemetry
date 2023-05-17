@@ -79,6 +79,14 @@ resource "aws_cloudfront_distribution" "e2e_tracing" {
 
 resource "aws_s3_bucket" "e2e_tracing" {
   bucket = uuid()
+  force_destroy = true
+}
+
+resource "aws_s3_bucket_ownership_controls" "e2e_tracing" {
+  bucket = aws_s3_bucket.e2e_tracing.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
 }
 
 data "aws_cloudfront_cache_policy" "cache_disabled" {
