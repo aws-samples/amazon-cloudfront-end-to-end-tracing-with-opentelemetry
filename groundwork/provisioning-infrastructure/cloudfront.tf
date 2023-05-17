@@ -90,6 +90,15 @@ resource "aws_s3_bucket" "e2e_tracing" {
   force_destroy = true
 }
 
+resource "aws_s3_bucket_public_access_block" "e2e_tracing" {
+  bucket = aws_s3_bucket.e2e_tracing.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  restrict_public_buckets = true
+  ignore_public_acls      = true
+}
+
 resource "aws_s3_bucket_ownership_controls" "e2e_tracing" {
   bucket = aws_s3_bucket.e2e_tracing.id
   rule {
