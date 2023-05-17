@@ -25,6 +25,15 @@ resource "aws_security_group" "alb_sg" {
     ipv6_cidr_blocks = ["::/0"]
   }
 
+  ingress {
+    description      = "Otel Collector from Public"
+    from_port        = local.otel_collector_otlp_http_port
+    to_port          = local.otel_collector_otlp_http_port
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
   egress {
     from_port        = 0
     to_port          = 0

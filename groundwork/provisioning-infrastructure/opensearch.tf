@@ -8,6 +8,7 @@ resource "aws_opensearch_domain" "this" {
 
   cluster_config {
     instance_type          = var.opensearch_instance_type
+    instance_count         = 2
     zone_awareness_enabled = true
   }
 

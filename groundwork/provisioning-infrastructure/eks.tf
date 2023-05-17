@@ -78,6 +78,16 @@ resource "aws_security_group_rule" "egress_all" {
   description       = "egress_all"
 }
 
+resource "aws_security_group_rule" "alb_" {
+  security_group_id        = module.eks.node_security_group_id
+  type                     = "ingress"
+  to_port                  = 8080
+  protocol                 = "tcp"
+  from_port                = 8080
+  source_security_group_id = aws_security_group.alb_sg.id
+  description              = "Allow access from ALB to workload"
+}
+
 resource "aws_security_group_rule" "alb_webhook" {
   security_group_id        = module.eks.node_security_group_id
   type                     = "ingress"
