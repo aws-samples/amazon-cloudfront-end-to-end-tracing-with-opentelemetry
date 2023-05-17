@@ -3,6 +3,8 @@ resource "aws_opensearch_domain" "this" {
   # checkov:skip=CKV_AWS_248: This is just a sample for demonstration purposes, so we will use public domain here.
   # checkov:skip=CKV_AWS_247: This is just a sample for demonstration purposes, so we don't need to encrypt all data with CMK here.
   # checkov:skip=CKV2_AWS_59: This is just a sample for demonstration purposes, so we don't need a dedicated master node here.
+  # checkov:skip=CKV_AWS_317: This is just a sample for demonstration purposes, so we don't need audit logging.
+  # checkov:skip=CKV_AWS_318: This is just a sample for demonstration purposes, so we don't need HA.
   domain_name    = "opensearch"
   engine_version = "Elasticsearch_7.10"
 

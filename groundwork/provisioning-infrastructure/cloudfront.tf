@@ -1,9 +1,11 @@
 resource "aws_cloudfront_distribution" "e2e_tracing" {
+  # checkov:skip=CKV2_AWS_46: This CloudFront Distribution does not have a S3 Origin.
   # checkov:skip=CKV2_AWS_47: This is just a sample for demonstration purposes, so we don't need WAF enabled here.
   # checkov:skip=CKV_AWS_68: This is just a sample for demonstration purposes, so we don't need WAF enabled here.
-  # checkov:skip=CKV_AWS_86: This is just a sample for demonstration purposes, so we don't need cloudfront access log configuration here.
   # checkov:skip=CKV2_AWS_42: This is just a sample for demonstration purposes, so we don't need a custom SSL certificate here.
   # checkov:skip=CKV_AWS_174: This is just a sample for demonstration purposes, so we don't need a custom SSL certificate here.
+  # checkov:skip=CKV_AWS_305: This is just a sample for demonstration purposes, so we don't need a default root object.
+  # checkov:skip=CKV_AWS_310: This is just a sample for demonstration purposes, so we don't need origin failover.
   enabled         = true
   is_ipv6_enabled = false
   price_class     = "PriceClass_200"
@@ -78,6 +80,12 @@ resource "aws_cloudfront_distribution" "e2e_tracing" {
 }
 
 resource "aws_s3_bucket" "e2e_tracing" {
+  # checkov:skip=CKV_AWS_18: This is just a sample for demonstration purposes, so we don't need access logging.
+  # checkov:skip=CKV_AWS_21: This is just a sample for demonstration purposes, so we don't need versioning.
+  # checkov:skip=CKV2_AWS_61: This is just a sample for demonstration purposes, so we don't need a lifecycle configuration.
+  # checkov:skip=CKV2_AWS_62: This is just a sample for demonstration purposes, so we don't need event notification.
+  # checkov:skip=CKV_AWS_144: This is just a sample for demonstration purposes, so we don't need cross-region replication.
+  # checkov:skip=CKV_AWS_145: This is just a sample for demonstration purposes, so we don't need KMS encryption.
   bucket = uuid()
   force_destroy = true
 }
