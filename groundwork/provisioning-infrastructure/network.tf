@@ -13,6 +13,7 @@ resource "aws_default_security_group" "default" {
 # alb security group
 resource "aws_security_group" "alb_sg" {
   # checkov:skip=CKV2_AWS_5: This security group is attached to the ALB defined in ingress.tf
+  # checkov:skip=CKV_AWS_260: This does not allow ingress from 0.0.0.0:0 to port 80
   name        = "allow_http"
   description = "Allow HTTP inbound traffic"
   vpc_id      = aws_vpc.this.id
@@ -22,8 +23,7 @@ resource "aws_security_group" "alb_sg" {
     from_port        = 80
     to_port          = 80
     protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
+    prefix_list_ids = [data.aws_ec2_managed_prefix_list.cloudfront_origin-facing.id]
   }
 
   ingress {

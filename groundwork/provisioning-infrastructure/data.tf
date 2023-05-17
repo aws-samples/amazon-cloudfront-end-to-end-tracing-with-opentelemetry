@@ -13,3 +13,7 @@ data "aws_lb" "k8s_ingress_lb" {
     kubernetes_ingress_v1.k8s_ingress
   ]
 }
+
+data "aws_ec2_managed_prefix_list" "cloudfront_origin-facing" {
+  name = "com.amazonaws.global.cloudfront.origin-facing"
+}
