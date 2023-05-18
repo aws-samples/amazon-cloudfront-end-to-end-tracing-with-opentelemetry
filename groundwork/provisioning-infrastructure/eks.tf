@@ -88,6 +88,26 @@ resource "aws_security_group_rule" "alb_" {
   description              = "Allow access from ALB to workload"
 }
 
+resource "aws_security_group_rule" "alb_otel" {
+  security_group_id        = module.eks.node_security_group_id
+  type                     = "ingress"
+  to_port                  = local.otel_collector_otlp_http_port
+  protocol                 = "tcp"
+  from_port                = local.otel_collector_otlp_http_port
+  source_security_group_id = aws_security_group.alb_sg.id
+  description              = "Allow access from ALB to opentelemetry-collector"
+}
+
+resource "aws_security_group_rule" "alb_otel_healthcheck" {
+  security_group_id        = module.eks.node_security_group_id
+  type                     = "ingress"
+  to_port                  = local.otel_collector_health_check_port
+  protocol                 = "tcp"
+  from_port                = local.otel_collector_health_check_port
+  source_security_group_id = aws_security_group.alb_sg.id
+  description              = "Allow access from ALB to opentelemetry-collector"
+}
+
 resource "aws_security_group_rule" "alb_webhook" {
   security_group_id        = module.eks.node_security_group_id
   type                     = "ingress"

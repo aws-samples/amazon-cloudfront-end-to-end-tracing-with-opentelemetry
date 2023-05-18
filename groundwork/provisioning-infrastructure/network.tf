@@ -12,6 +12,8 @@ resource "aws_default_security_group" "default" {
 
 # alb security group
 resource "aws_security_group" "alb_sg" {
+  # checkov:skip=CKV2_AWS_5: This security group is attached to the ALB defined in ingress.tf
+  # checkov:skip=CKV_AWS_260: This does not allow ingress from 0.0.0.0:0 to port 80
   name        = "allow_http"
   description = "Allow HTTP inbound traffic"
   vpc_id      = aws_vpc.this.id
@@ -21,8 +23,7 @@ resource "aws_security_group" "alb_sg" {
     from_port        = 80
     to_port          = 80
     protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
+    prefix_list_ids = [data.aws_ec2_managed_prefix_list.cloudfront_origin-facing.id]
   }
 
   ingress {
@@ -35,6 +36,7 @@ resource "aws_security_group" "alb_sg" {
   }
 
   egress {
+    description      = "allow all"
     from_port        = 0
     to_port          = 0
     protocol         = "-1"
@@ -72,16 +74,6 @@ resource "aws_subnet" "eks-private" {
   )
 }
 
-resource "aws_subnet" "backing-private" {
-  count             = length(var.azs)
-  vpc_id            = aws_vpc.this.id
-  cidr_block        = cidrsubnet(cidrsubnet(var.cidr, 4, 2), 2, count.index)
-  availability_zone = var.azs[count.index]
-  tags = merge(
-    { "Name" = "backing-private-${var.azs[count.index]}" }
-  )
-}
-
 # default network ACL
 resource "aws_default_network_acl" "dev_default" {
   default_network_acl_id = aws_vpc.this.default_network_acl_id
@@ -106,8 +98,7 @@ resource "aws_default_network_acl" "dev_default" {
 
   subnet_ids = flatten([
     aws_subnet.public.*.id,
-    aws_subnet.eks-private.*.id,
-    aws_subnet.backing-private.*.id
+    aws_subnet.eks-private.*.id
   ])
 }
 
@@ -164,17 +155,4 @@ resource "aws_route_table_association" "eks-private" {
 
   subnet_id      = aws_subnet.eks-private.*.id[count.index]
   route_table_id = aws_route_table.private.*.id[count.index]
-}
-
-resource "aws_route_table_association" "backing-private" {
-  count = length(var.azs)
-
-  subnet_id      = aws_subnet.backing-private.*.id[count.index]
-  route_table_id = aws_route_table.private.*.id[count.index]
-}
-
-# backing service subnet group
-resource "aws_db_subnet_group" "backing-private" {
-  name       = "sbn-group-dev-backing-private"
-  subnet_ids = aws_subnet.backing-private.*.id
 }

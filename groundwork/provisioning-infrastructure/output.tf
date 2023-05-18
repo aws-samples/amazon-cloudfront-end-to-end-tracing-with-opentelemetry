@@ -15,6 +15,6 @@ output "kibana_dashboard_password" {
   value = var.opensearch_master_password
 }
 
-output "cfn_distribution_domain_name" {
-  value = aws_cloudfront_distribution.e2e_tracing.domain_name
+output "demo-app_api_endpoint" {
+  value = "https://${aws_cloudfront_distribution.e2e_tracing.domain_name}/"
 }

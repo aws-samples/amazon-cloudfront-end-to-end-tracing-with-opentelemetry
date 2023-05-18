@@ -1,9 +1,11 @@
 resource "aws_cloudfront_distribution" "e2e_tracing" {
+  # checkov:skip=CKV2_AWS_46: This CloudFront Distribution does not have a S3 Origin.
   # checkov:skip=CKV2_AWS_47: This is just a sample for demonstration purposes, so we don't need WAF enabled here.
   # checkov:skip=CKV_AWS_68: This is just a sample for demonstration purposes, so we don't need WAF enabled here.
-  # checkov:skip=CKV_AWS_86: This is just a sample for demonstration purposes, so we don't need cloudfront access log configuration here.
   # checkov:skip=CKV2_AWS_42: This is just a sample for demonstration purposes, so we don't need a custom SSL certificate here.
   # checkov:skip=CKV_AWS_174: This is just a sample for demonstration purposes, so we don't need a custom SSL certificate here.
+  # checkov:skip=CKV_AWS_305: This is just a sample for demonstration purposes, so we don't need a default root object.
+  # checkov:skip=CKV_AWS_310: This is just a sample for demonstration purposes, so we don't need origin failover.
   enabled         = true
   is_ipv6_enabled = false
   price_class     = "PriceClass_200"
@@ -78,7 +80,30 @@ resource "aws_cloudfront_distribution" "e2e_tracing" {
 }
 
 resource "aws_s3_bucket" "e2e_tracing" {
+  # checkov:skip=CKV_AWS_18: This is just a sample for demonstration purposes, so we don't need access logging.
+  # checkov:skip=CKV_AWS_21: This is just a sample for demonstration purposes, so we don't need versioning.
+  # checkov:skip=CKV2_AWS_61: This is just a sample for demonstration purposes, so we don't need a lifecycle configuration.
+  # checkov:skip=CKV2_AWS_62: This is just a sample for demonstration purposes, so we don't need event notification.
+  # checkov:skip=CKV_AWS_144: This is just a sample for demonstration purposes, so we don't need cross-region replication.
+  # checkov:skip=CKV_AWS_145: This is just a sample for demonstration purposes, so we don't need KMS encryption.
   bucket = uuid()
+  force_destroy = true
+}
+
+resource "aws_s3_bucket_public_access_block" "e2e_tracing" {
+  bucket = aws_s3_bucket.e2e_tracing.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  restrict_public_buckets = true
+  ignore_public_acls      = true
+}
+
+resource "aws_s3_bucket_ownership_controls" "e2e_tracing" {
+  bucket = aws_s3_bucket.e2e_tracing.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
 }
 
 data "aws_cloudfront_cache_policy" "cache_disabled" {
@@ -106,8 +131,8 @@ resource "aws_cloudwatch_log_group" "cf_tracing_response" {
   retention_in_days = 7
 }
 
-resource "aws_iam_role" "iam_for_lambda" {
-  name = "iam_for_lambda"
+resource "aws_iam_role" "cf_tracing_processor" {
+  name = "cf_tracing_processor"
 
   assume_role_policy = <<EOF
 {
@@ -124,30 +149,7 @@ resource "aws_iam_role" "iam_for_lambda" {
   ]
 }
 EOF
-  inline_policy {
-    name = "LambdaCloudWatchPolicy"
-
-    policy = jsonencode({
-      Version = "2012-10-17"
-      Statement = [
-        {
-          "Effect" : "Allow",
-          "Action" : "logs:CreateLogGroup",
-          "Resource" : "arn:aws:logs:us-east-1:${data.aws_caller_identity.current.account_id}:*"
-        },
-        {
-          "Effect" : "Allow",
-          "Action" : [
-            "logs:CreateLogStream",
-            "logs:PutLogEvents"
-          ],
-          "Resource" : [
-            "arn:aws:logs:us-east-1:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/cf_tracing_processor:*"
-          ]
-        }
-      ]
-    })
-  }
+  managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"]
 }
 
 data "archive_file" "cf_tracing_processor" {
@@ -163,13 +165,13 @@ resource "aws_lambda_function" "cf_tracing_processor" {
   # checkov:skip=CKV_AWS_173: This is just a sample for demonstration purposes, so we don't need a KMS encryption here.
   # checkov:skip=CKV_AWS_116: This is just a sample for demonstration purposes, so we don't need a deadletter queue here.
   function_name = "cf_tracing_processor"
-  role          = aws_iam_role.iam_for_lambda.arn
+  role          = aws_iam_role.cf_tracing_processor.arn
 
   runtime  = "nodejs16.x"
   handler  = "cf-tracing-processor.handler"
   filename = "${path.module}/cf_tracing_processor.zip"
 
-  provider = aws.us
+  provider = aws.seoul
 
   environment {
     variables = {
@@ -182,7 +184,26 @@ resource "aws_lambda_function" "cf_tracing_processor" {
   tracing_config {
     mode = "Active"
   }
+  vpc_config {
+    security_group_ids = [aws_security_group.cf_tracing_processor.id]
+    subnet_ids         = aws_subnet.eks-private.*.id
+  }
   reserved_concurrent_executions = 100
+}
+
+resource "aws_security_group" "cf_tracing_processor" {
+  name        = "cf_tracing_processor"
+  description = "Allow HTTP outbound traffic to otel-collector"
+  vpc_id      = aws_vpc.this.id
+
+  egress {
+    description = "to otel-collector endpoint"
+    from_port        = local.otel_collector_otlp_http_port
+    to_port          = local.otel_collector_otlp_http_port
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
 }
 
 resource "aws_cloudwatch_log_group" "cf_tracing_processor" {
@@ -199,6 +220,8 @@ resource "aws_cloudwatch_log_subscription_filter" "cf_tracing_response_filter" {
   destination_arn = aws_lambda_function.cf_tracing_processor.arn
 
   provider = aws.us
+
+  depends_on = [aws_lambda_permission.allow_cloudwatch]
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch" {
@@ -208,7 +231,7 @@ resource "aws_lambda_permission" "allow_cloudwatch" {
   principal     = "logs.us-east-1.amazonaws.com"
   source_arn    = "${aws_cloudwatch_log_group.cf_tracing_response.arn}:*"
 
-  provider = aws.us
+  provider = aws.seoul
 }
 
 
