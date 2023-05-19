@@ -66,6 +66,7 @@ POLICY
 
 resource "aws_cloudwatch_log_group" "opensearch" {
   # checkov:skip=CKV_AWS_158: This is just a sample for demonstration purposes, so we don't need KMS key here.
+  # checkov:skip=CKV_AWS_338: This is just a sample for demonstration purposes, so we don't need 1 year log retention.
   name              = "opensearch"
   retention_in_days = 7
 }

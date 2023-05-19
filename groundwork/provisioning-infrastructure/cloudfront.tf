@@ -126,6 +126,7 @@ resource "aws_cloudfront_function" "cf_tracing_response" {
 
 resource "aws_cloudwatch_log_group" "cf_tracing_response" {
   # checkov:skip=CKV_AWS_158: This is just a sample for demonstration purposes, so we don't need KMS key here.
+  # checkov:skip=CKV_AWS_338: This is just a sample for demonstration purposes, so we don't need 1 year log retention.
   name              = "/aws/cloudfront/function/cf-tracing-response"
   provider          = aws.us
   retention_in_days = 7
@@ -207,6 +208,7 @@ resource "aws_security_group" "cf_tracing_processor" {
 
 resource "aws_cloudwatch_log_group" "cf_tracing_processor" {
   # checkov:skip=CKV_AWS_158: This is just a sample for demonstration purposes, so we don't need a KMS encryption here.
+  # checkov:skip=CKV_AWS_338: This is just a sample for demonstration purposes, so we don't need 1 year log retention.
   name              = "/aws/lambda/cf_tracing_processor"
   provider          = aws.us
   retention_in_days = 7
