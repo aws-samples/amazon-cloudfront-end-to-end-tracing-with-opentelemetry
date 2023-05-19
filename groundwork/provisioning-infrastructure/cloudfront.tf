@@ -160,7 +160,6 @@ data "archive_file" "cf_tracing_processor" {
 }
 
 resource "aws_lambda_function" "cf_tracing_processor" {
-  # checkov:skip=CKV_AWS_117: This is just a sample for demonstration purposes, so we don't need to configure lambda inside VPC.
   # checkov:skip=CKV_AWS_272: This is just a sample for demonstration purposes, so we don't need to validate code-signing here.
   # checkov:skip=CKV_AWS_173: This is just a sample for demonstration purposes, so we don't need a KMS encryption here.
   # checkov:skip=CKV_AWS_116: This is just a sample for demonstration purposes, so we don't need a deadletter queue here.
