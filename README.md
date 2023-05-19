@@ -1,20 +1,19 @@
 ## Setting up end-to-end tracing that starts from Amazon CloudFront using OpenTelemetry
 
 ## Introduction
-In this blog, you will learn how to setup an end-to-end tracing with [OpenTelemetry](https://opentelemetry.io/) that starts from Amazon CloudFront. An end-to-end tracing, or E2E tracing is a great tool to have in order to identify problems in a modern, distributed architecture. Although a tracing starts from Amazon CloudFront technically does not qualify as a true end-to-end tracing since it does not consider the things happen in the client, you can expand the concepts covered in this post and setup your own E2E tracing starting from your clients.  
+This is the associated repository for the AWS blog on how to setup an end-to-end tracing with [OpenTelemetry](https://opentelemetry.io/) that starts from Amazon CloudFront. An end-to-end tracing, or E2E tracing is a great tool to have in order to identify problems in a modern, distributed architecture. Although a tracing starts from Amazon CloudFront technically does not qualify as a true end-to-end tracing since it does not consider the things happen in the client, you can expand the concepts covered in the blog post and setup your own E2E tracing starting from your clients.  
   
-Unlike Amazon API Gateway, Amazon CloudFront does not support tracing out of the box. But thanks to [CloudFront Function,](https://aws.amazon.com/lambda/edge/) Amazon CloudFront can send OpenTelemetry compatible message to a OpenTelemetry Collector and the traces can be aggregated in your preferred backend including but not limited to [Jaeger](https://www.jaegertracing.io/), [Zipkin](https://zipkin.io/), [Prometheus](https://prometheus.io/), Elasticsearch or [Amazon Opensearch](https://aws.amazon.com/opensearch-service/).  
+Unlike Amazon API Gateway, Amazon CloudFront does not support tracing out of the box. But thanks to [CloudFront Function,](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cloudfront-functions.html) Amazon CloudFront can send OpenTelemetry compatible message to a OpenTelemetry Collector and the traces can be aggregated in your preferred backend including but not limited to [Jaeger](https://www.jaegertracing.io/), [Zipkin](https://zipkin.io/), [Prometheus](https://prometheus.io/), Elasticsearch or [Amazon Opensearch](https://aws.amazon.com/opensearch-service/).  
   
-In this post, we will be using [Amazon Opensearch](https://aws.amazon.com/opensearch-service/) as my backend to enjoy the benefit of [Opensearch Trace Analytics](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/trace-analytics.html)for visualizing the traces. But you are free to use different backend of your choice.   
-  
-You can find all of the code and resources used throughout this post in [the associated GitHub repository](https://github.com/aws-samples/Load-testing-your-workload-running-on-Amazon-EKS-with-Locust).  
+We will use [Amazon Opensearch](https://aws.amazon.com/opensearch-service/) as our tracing backend to enjoy the benefit of [Opensearch Trace Analytics](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/trace-analytics.html) for visualizing the traces. But you are free to use different backend of your choice. 
   
 
 ## Overview of solution
-![](./overview.jpg)
+![](./overview.png)
+
 We’ll demonstrate end-to-end tracing with the above architecture. A demo application (“demo app”) is hosted in an EKS cluster to process end-user requests. Its API endpoint is exposed to the public via CloudFront. We use OpenTelemetry to trace user requests to the demo app API.  
 
-OpenTelemetry is a set of APIs, SDKs, tools and integrations designed for telemetry data such as traces, metrics, and logs. It serves as a common specification to generate and collect telemetry data in vendor-agnostic way. We use OpenTelemetry to instrument trace logs generated from a CloudFront distribution and the microservices.  
+OpenTelemetry is a set of APIs, SDKs, tools and integrations designed for telemetry data such as traces, metrics, and logs. It serves as a common specification to generate and collect telemetry data in vendor-agnostic way. We use OpenTelemetry to instrument trace logs generated from a CloudFront distribution and the demo app.  
 
 Specifically, we use the OpenTelemetry Java Agent to instrument the demo app written in Java. With simple configuration, the agent can automatically instrument Java applications. In contrast, there is no such auto instrumentation available for CloudFront, so we’ll build an OpenTelemetry compatible payload within a Lambda function and make a HTTP POST request to the same OpenTelemetry Collector that ingests auto-instrumented traces from Java applications.  
 
@@ -95,6 +94,7 @@ terraform plan
 terraform apply
 ```
 
+In case you have problem running the above terraform commands, please check your running environment and/or your internet connection for terraform provisioning.
 
 ### Clean Up
 To clean up the resources installed with Terraform, you can run the command below:
