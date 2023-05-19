@@ -43,14 +43,14 @@ We use the Terraform Helm Provider to deploy demo app to the EKS cluster.
 The demo app's source code and Dockerfile are provided so that you can build and host an application Docker image 
 in your private repository. Please note that the EKS cluster should have access to your image repository. 
 The simplest approach is to create an ECR repository in the same AWS account, and we provide detailed instruction in the 
-[README](https://github.com/aws-samples/amazon-cloudfront-end-to-end-tracing-with-opentelemetry/tree/main/groundwork/prepare-application-docker-images) file.
+[README](https://github.com/aws-samples/amazon-cloudfront-end-to-end-tracing-with-opentelemetry/tree/main/prepare-application-docker-images) file.
 
 ### Run Terraform
 First, we input application image repository names to Terraform. 
 Replace AWS Region and repository names in the below script and execute the script.
 ```
 # Move to working directory
-cd groundwork/provisioning-infrastructure
+cd provisioning-infrastructure
 
 # Append sample image repository information to terraform.auto.tfvars
 export AWS_REGION="<<YOUR_REGION>>"   # ex. ap-northeast-2
@@ -60,7 +60,7 @@ export DEMO_APP_REPO_NAME="demo-app"
 
 echo demo_app_repository=\"$ECR_URL/$DEMO_APP_REPO_NAME\" >> ./terraform.auto.tfvars
 ```
-Then, open the [main.tf](https://github.com/aws-samples/amazon-cloudfront-end-to-end-tracing-with-opentelemetry/blob/main/groundwork/provisioning-infrastructure/main.tf) file. 
+Then, open the [main.tf](https://github.com/aws-samples/amazon-cloudfront-end-to-end-tracing-with-opentelemetry/blob/main/provisioning-infrastructure/main.tf) file. 
 Enter the name and region of the bucket you created earlier and save the file.
 ```
 # main.tf
